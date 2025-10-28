@@ -5,7 +5,19 @@
 {% block content %}
 <section class="page-section">
     <div class="container">
-        <h1 class="page-title">Veículos Disponíveis</h1>
+        <div class="page-header">
+            <h1 class="page-title">Veículos Disponíveis</h1>
+            {% if logged_in %}
+                <div class="actions-buttons">
+                    <a href="{{ url_for('veiculo.listar_veiculos') }}" class="btn btn-secondary" title="Gerenciar estoque">
+                        <i class="fa-solid fa-warehouse"></i> Gerenciar
+                    </a>
+                    <a href="{{ url_for('veiculo.formulario_novo_veiculo') }}" class="btn btn-primary" title="Adicionar novo veículo">
+                        <i class="fa-solid fa-plus"></i> Novo Veículo
+                    </a>
+                </div>
+            {% endif %}
+        </div>
         <p class="page-subtitle">Confira nossa seleção de veículos disponíveis</p>
         
         {% if veiculos %}
