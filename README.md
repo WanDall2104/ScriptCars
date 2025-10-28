@@ -54,7 +54,7 @@ mysql -u root -p < SQL-Códigos-BD.txt
 
 5. **Crie a pasta de uploads (se necessário):**
 ```bash
-mkdir static/uploads
+mkdir views/static/uploads
 ```
 
 6. **Execute a aplicação:**
@@ -77,38 +77,39 @@ Após executar o SQL, você pode fazer login com:
 
 ```
 projetofinalbackend/
-├── app.py                      # Arquivo principal da aplicação
-├── config.py                   # Configuração do banco de dados
-├── requirements.txt             # Dependências do projeto
-├── SQL-Códigos-BD.txt          # Script de criação do banco de dados
-├── controllers/                # Controllers (lógica de controle)
-│   ├── auth_controller.py      # Autenticação e login
-│   ├── cliente_controller.py   # CRUD de clientes
+├── app.py                        # Arquivo principal da aplicação
+├── config.py                     # Configuração do banco de dados
+├── requirements.txt              # Dependências do projeto
+├── SQL-Códigos-BD.txt            # Script de criação do banco de dados
+├── controllers/                  # Controllers (lógica de controle)
+│   ├── auth_controller.py        # Autenticação e login
+│   ├── cliente_controller.py     # CRUD de clientes
 │   ├── funcionario_controller.py # CRUD de funcionários
-│   ├── veiculo_controller.py   # CRUD de veículos
-│   └── venda_controller.py      # CRUD de vendas
-├── models/                     # Models (lógica de negócio)
+│   ├── veiculo_controller.py     # CRUD de veículos
+│   └── venda_controller.py       # CRUD de vendas
+├── models/                       # Models (lógica de negócio)
 │   ├── __init__.py
-│   ├── cliente_model.py        # Funções de acesso aos dados de clientes
-│   ├── funcionario_model.py    # Funções de acesso aos dados de funcionários
-│   ├── veiculo_model.py        # Funções de acesso aos dados de veículos
-│   └── venda_model.py          # Funções de acesso aos dados de vendas
-├── views/                      # Templates (HTML)
-│   ├── base.html               # Template base
-│   ├── home.html               # Página inicial (pública)
-│   ├── sobre.html              # Sobre a empresa (pública)
-│   ├── login.html              # Página de login
-│   ├── cadastro.html           # Página de cadastro
-│   ├── veiculos_disponiveis.html # Veículos (pública)
-│   ├── clientes.html           # Lista de clientes
-│   ├── funcionarios.html       # Lista de funcionários
-│   ├── veiculos.html           # Lista de veículos
-│   ├── vendas.html             # Lista de vendas
-│   └── form_*.html             # Formulários de CRUD
-└── static/                     # Arquivos estáticos
-|   └── uploads/                # Fotos dos veículos
-│   ├── style.css               # Estilos CSS
-   
+│   ├── cliente_model.py          # Funções de acesso aos dados de clientes
+│   ├── funcionario_model.py      # Funções de acesso aos dados de funcionários
+│   ├── veiculo_model.py          # Funções de acesso aos dados de veículos
+│   └── venda_model.py            # Funções de acesso aos dados de vendas
+└── views/
+    ├── templates/                # Templates (HTML)
+    │   ├── base.html             # Template base
+    │   ├── home.html             # Página inicial (pública)
+    │   ├── sobre.html            # Sobre a empresa (pública)
+    │   ├── login.html            # Página de login
+    │   ├── cadastro.html         # Página de cadastro
+    │   ├── veiculos_disponiveis.html # Veículos (pública)
+    │   ├── clientes.html         # Lista de clientes
+    │   ├── funcionarios.html     # Lista de funcionários
+    │   ├── veiculos.html         # Lista de veículos
+    │   ├── vendas.html           # Lista de vendas
+    │   └── form_*.html           # Formulários de CRUD
+    └── static/                   # Arquivos estáticos
+        ├── style.css             # Estilos CSS
+        └── uploads/              # Fotos dos veículos
+
 ```
 
 ## 🎯 Funcionalidades
