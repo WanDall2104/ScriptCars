@@ -47,17 +47,21 @@
                             
                             <div class="vehicle-actions">
                                 {% if veiculo.disponivel %}
-                                    <span class="badge badge-success">✓ Disponível</span>
+                                    <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Disponível</span>
                                 {% else %}
-                                    <span class="badge badge-danger">✗ Indisponível</span>
+                                    <span class="badge badge-danger"><i class="fa-solid fa-circle-xmark"></i> Indisponível</span>
                                 {% endif %}
-                                
+
                                 {% if logged_in %}
                                     <div class="actions-buttons">
-                                        <a href="{{ url_for('veiculo.formulario_editar_veiculo', id=veiculo.id_veiculo) }}" class="btn-icon">✏️</a>
+                                        <a href="{{ url_for('veiculo.formulario_editar_veiculo', id=veiculo.id_veiculo) }}" class="btn-icon" title="Editar">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
                                         <a href="{{ url_for('veiculo.excluir_veiculo', id=veiculo.id_veiculo) }}" 
-                                           class="btn-icon btn-delete" 
-                                           onclick="return confirm('Deseja realmente excluir este veículo?')">🗑️</a>
+                                           class="btn-icon btn-delete" title="Excluir"
+                                           onclick="return confirm('Deseja realmente excluir este veículo?')">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </a>
                                     </div>
                                 {% endif %}
                             </div>

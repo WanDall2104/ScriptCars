@@ -38,10 +38,14 @@
                                 <td><strong>R$ {{ "%.2f"|format(venda.valor_final) }}</strong></td>
                                 <td>{{ venda.nome_funcionario }}<br><small>{{ venda.cargo }}</small></td>
                                 <td class="actions">
-                                    <a href="{{ url_for('venda.detalhes_venda', id=venda.id_venda) }}" class="btn-icon">👁️</a>
+                                    <a href="{{ url_for('venda.detalhes_venda', id=venda.id_venda) }}" class="btn-icon" title="Detalhes">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
                                     <a href="{{ url_for('venda.excluir_venda', id=venda.id_venda) }}" 
-                                       class="btn-icon btn-delete" 
-                                       onclick="return confirm('Deseja realmente excluir esta venda?')">🗑️</a>
+                                       class="btn-icon btn-delete" title="Excluir"
+                                       onclick="return confirm('Deseja realmente excluir esta venda?')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}

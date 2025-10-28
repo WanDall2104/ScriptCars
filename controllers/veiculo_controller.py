@@ -31,13 +31,21 @@ def criar_pasta_uploads():
 @veiculo_bp.route('/veiculos')
 def listar_veiculos():
     """Lista todos os veículos (página pública quando não logado)"""
-    veiculos = veiculo_model.listar_veiculos()
+    try:
+        veiculos = veiculo_model.listar_veiculos()
+    except Exception as e:
+        flash("Não foi possível carregar os veículos. Verifique a conexão com o banco de dados.", "error")
+        veiculos = []
     return render_template('veiculos.html', veiculos=veiculos, logged_in='user_id' in session)
 
 @veiculo_bp.route('/veiculos_disponiveis')
 def listar_veiculos_disponiveis():
     """Lista veículos disponíveis (página pública)"""
-    veiculos = veiculo_model.listar_veiculos_disponiveis()
+    try:
+        veiculos = veiculo_model.listar_veiculos_disponiveis()
+    except Exception as e:
+        flash("Não foi possível carregar os veículos disponíveis. Verifique a conexão com o banco de dados.", "error")
+        veiculos = []
     return render_template('veiculos_disponiveis.html', veiculos=veiculos)
 
 @veiculo_bp.route('/veiculo/novo')

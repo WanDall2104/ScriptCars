@@ -36,10 +36,14 @@
                                 <td>{{ cliente.email or '-' }}</td>
                                 <td>{{ cliente.endereco or '-' }}</td>
                                 <td class="actions">
-                                    <a href="{{ url_for('cliente.formulario_editar_cliente', id=cliente.id_cliente) }}" class="btn-icon">✏️</a>
+                                    <a href="{{ url_for('cliente.formulario_editar_cliente', id=cliente.id_cliente) }}" class="btn-icon" title="Editar">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
                                     <a href="{{ url_for('cliente.excluir_cliente', id=cliente.id_cliente) }}" 
-                                       class="btn-icon btn-delete" 
-                                       onclick="return confirm('Deseja realmente excluir este cliente?')">🗑️</a>
+                                       class="btn-icon btn-delete" title="Excluir"
+                                       onclick="return confirm('Deseja realmente excluir este cliente?')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}

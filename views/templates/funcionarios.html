@@ -34,10 +34,14 @@
                                 <td>{{ funcionario.cargo }}</td>
                                 <td>{{ funcionario.data_admissao.strftime('%d/%m/%Y') if funcionario.data_admissao else '-' }}</td>
                                 <td class="actions">
-                                    <a href="{{ url_for('funcionario.formulario_editar_funcionario', id=funcionario.id_funcionario) }}" class="btn-icon">✏️</a>
+                                    <a href="{{ url_for('funcionario.formulario_editar_funcionario', id=funcionario.id_funcionario) }}" class="btn-icon" title="Editar">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
                                     <a href="{{ url_for('funcionario.excluir_funcionario', id=funcionario.id_funcionario) }}" 
-                                       class="btn-icon btn-delete" 
-                                       onclick="return confirm('Deseja realmente excluir este funcionário?')">🗑️</a>
+                                       class="btn-icon btn-delete" title="Excluir"
+                                       onclick="return confirm('Deseja realmente excluir este funcionário?')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}

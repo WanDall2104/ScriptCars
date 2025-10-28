@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Concessionária Premium{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" referrerpolicy="no-referrer" />
 </head>
 <body>
     <!-- Navegação -->
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
-                <h1>🚗 Concessionária Premium</h1>
+                <h1><i class="fa-solid fa-car"></i> Concessionária Premium</h1>
             </div>
             <ul class="nav-menu">
                 <li><a href="{{ url_for('home') }}">Home</a></li>
@@ -22,15 +23,15 @@
                     <li><a href="{{ url_for('cliente.listar_clientes') }}">Clientes</a></li>
                     <li><a href="{{ url_for('venda.listar_vendas') }}">Vendas</a></li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle">🚹 {{ user_nome }} ▼</a>
+                        <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('funcionario.listar_funcionarios') }}">Funcionários</a></li>
-                            <li><a href="{{ url_for('auth.logout') }}">Sair</a></li>
+                            <li><a href="{{ url_for('funcionario.listar_funcionarios') }}"><i class="fa-solid fa-users"></i> Funcionários</a></li>
+                            <li><a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
                         </ul>
                     </li>
                 {% else %}
-                    <li><a href="{{ url_for('auth.login') }}" class="btn-login">Login</a></li>
-                    <li><a href="{{ url_for('auth.cadastro') }}" class="btn-cadastro">Cadastrar</a></li>
+                    <li><a href="{{ url_for('auth.login') }}" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                    <li><a href="{{ url_for('auth.cadastro') }}" class="btn-cadastro"><i class="fa-solid fa-user-plus"></i> Cadastrar</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -56,7 +57,7 @@
     <footer class="footer">
         <div class="container">
             <p>&copy; 2024 Concessionária Premium. Todos os direitos reservados.</p>
-            <p>Desenvolvido com ❤️ para gestão de vendas automotivas</p>
+            <p>Desenvolvido com <i class="fa-solid fa-heart" style="color:#ef4444"></i> para gestão de vendas automotivas</p>
         </div>
     </footer>
 
