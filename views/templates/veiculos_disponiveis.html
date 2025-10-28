@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Veículos Disponíveis - Concessionária Premium{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <h1 class="page-title">Veículos Disponíveis</h1>
+        <p class="page-subtitle">Confira nossa seleção de veículos disponíveis</p>
+        
+        {% if veiculos %}
+            <div class="vehicles-grid">
+                {% for veiculo in veiculos %}
+                    <div class="vehicle-card">
+                        {% if veiculo.foto %}
+                            <img src="{{ url_for('static', filename=veiculo.foto.replace('views/static/', '')) }}" alt="{{ veiculo.marca }} {{ veiculo.modelo }}" class="vehicle-image">
+                        {% else %}
+                            <div class="vehicle-no-image">
+                                <span>Sem foto</span>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="vehicle-info">
+                            <h3 class="vehicle-title">{{ veiculo.marca }} {{ veiculo.modelo }}</h3>
+                            <div class="vehicle-details">
+                                <p><strong>Ano:</strong> {{ veiculo.ano }}</p>
+                                {% if veiculo.cor %}
+                                    <p><strong>Cor:</strong> {{ veiculo.cor }}</p>
+                                {% endif %}
+                                {% if veiculo.combustivel %}
+                                    <p><strong>Combustível:</strong> {{ veiculo.combustivel }}</p>
+                                {% endif %}
+                                {% if veiculo.km_rodados %}
+                                    <p><strong>KM:</strong> {{ veiculo.km_rodados }} km</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="vehicle-price">
+                                <strong>R$ {{ "%.2f"|format(veiculo.preco) }}</strong>
+                            </div>
+                            
+                            {% if veiculo.disponivel %}
+                                <span class="badge badge-success">Disponível</span>
+                            {% else %}
+                                <span class="badge badge-danger">Indisponível</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>Nenhum veículo disponível no momento.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

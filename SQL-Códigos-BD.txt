@@ -1,0 +1,98 @@
+-- ============================================
+-- SCRIPT DE CRIAÇÃO DO BANCO DE DADOS
+-- SISTEMA DE GESTÃO DE CONCESSIONÁRIA
+-- ============================================
+
+-- Criar banco de dados
+CREATE DATABASE IF NOT EXISTS concessionaria CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE concessionaria;
+
+-- ============================================
+-- Tabela de Funcionários
+-- ============================================
+CREATE TABLE IF NOT EXISTS funcionarios (
+    id_funcionario INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    senha_hash VARCHAR(255) NOT NULL,
+    cargo VARCHAR(50) NOT NULL,
+    data_admissao DATE DEFAULT (CURRENT_DATE),
+    INDEX idx_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ============================================
+-- Tabela de Clientes
+-- ============================================
+CREATE TABLE IF NOT EXISTS clientes (
+    id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    telefone VARCHAR(20),
+    email VARCHAR(100),
+    endereco VARCHAR(255),
+    data_cadastro DATE DEFAULT (CURRENT_DATE),
+    INDEX idx_cpf (cpf)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ============================================
+-- Tabela de Veículos
+-- ============================================
+CREATE TABLE IF NOT EXISTS veiculos (
+    id_veiculo INT AUTO_INCREMENT PRIMARY KEY,
+    marca VARCHAR(50) NOT NULL,
+    modelo VARCHAR(50) NOT NULL,
+    ano INT NOT NULL,
+    preco DECIMAL(10,2) NOT NULL,
+    disponivel BOOLEAN DEFAULT TRUE,
+    foto VARCHAR(255),
+    km_rodados INT DEFAULT 0,
+    cor VARCHAR(30),
+    combustivel VARCHAR(30),
+    INDEX idx_disponivel (disponivel)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ============================================
+-- Tabela de Vendas
+-- ============================================
+CREATE TABLE IF NOT EXISTS vendas (
+    id_venda INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    id_funcionario INT NOT NULL,
+    id_veiculo INT NOT NULL,
+    data_venda DATE DEFAULT (CURRENT_DATE),
+    valor_final DECIMAL(10,2) NOT NULL,
+    forma_pagamento VARCHAR(50),
+    observacoes TEXT,
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente) ON DELETE RESTRICT,
+    FOREIGN KEY (id_funcionario) REFERENCES funcionarios(id_funcionario) ON DELETE RESTRICT,
+    FOREIGN KEY (id_veiculo) REFERENCES veiculos(id_veiculo) ON DELETE RESTRICT,
+    INDEX idx_data_venda (data_venda)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ============================================
+-- Dados de Teste
+-- ============================================
+
+-- Inserir funcionário admin
+-- Senha padrão: admin123
+INSERT INTO funcionarios (nome, email, senha_hash, cargo) VALUES
+('Admin', 'admin@concessionaria.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyC4MHsGIVYm', 'Administrador');
+
+-- Inserir clientes de exemplo
+INSERT INTO clientes (nome, cpf, telefone, email, endereco) VALUES
+('João Silva', '123.456.789-00', '(11) 99999-9999', 'joao@email.com', 'Rua A, 123'),
+('Maria Santos', '987.654.321-00', '(11) 88888-8888', 'maria@email.com', 'Rua B, 456'),
+('Carlos Oliveira', '456.789.123-00', '(11) 77777-7777', 'carlos@email.com', 'Av. Paulista, 1000');
+
+-- Inserir veículos de exemplo
+INSERT INTO veiculos (marca, modelo, ano, preco, disponivel, cor, combustivel, km_rodados) VALUES
+('Toyota', 'Corolla', 2022, 85000.00, TRUE, 'Prata', 'Flex', 15000),
+('Honda', 'Civic', 2021, 92000.00, TRUE, 'Preto', 'Flex', 20000),
+('Volkswagen', 'Jetta', 2023, 78000.00, TRUE, 'Branco', 'Flex', 8000),
+('Ford', 'Fusion', 2020, 68000.00, TRUE, 'Vermelho', 'Flex', 25000),
+('Chevrolet', 'Cruze', 2022, 73000.00, TRUE, 'Azul', 'Flex', 18000),
+('Fiat', 'Toro', 2023, 95000.00, TRUE, 'Branco', 'Diesel', 5000);
+
+-- ============================================
+-- FIM DO SCRIPT
+-- ============================================

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{% if veiculo %}Editar{% else %}Novo{% endif %} Veículo - Concessionária Premium{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="form-container">
+            <h1 class="page-title">{% if veiculo %}Editar{% else %}Novo{% endif %} Veículo</h1>
+            
+            <form method="POST" action="{% if veiculo %}{{ url_for('veiculo.editar_veiculo', id=veiculo.id_veiculo) }}{% else %}{{ url_for('veiculo.novo_veiculo') }}{% endif %}" 
+                  enctype="multipart/form-data" class="form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="marca">Marca *</label>
+                        <input type="text" id="marca" name="marca" required 
+                               value="{{ veiculo.marca if veiculo else '' }}" 
+                               placeholder="Ex: Toyota, Honda">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modelo">Modelo *</label>
+                        <input type="text" id="modelo" name="modelo" required 
+                               value="{{ veiculo.modelo if veiculo else '' }}" 
+                               placeholder="Ex: Corolla, Civic">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ano">Ano *</label>
+                        <input type="number" id="ano" name="ano" required 
+                               value="{{ veiculo.ano if veiculo else '' }}" 
+                               min="1900" max="2025">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="preco">Preço (R$) *</label>
+                        <input type="number" id="preco" name="preco" required 
+                               value="{{ veiculo.preco if veiculo else '' }}" 
+                               step="0.01" min="0" placeholder="50000.00">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cor">Cor</label>
+                        <input type="text" id="cor" name="cor" 
+                               value="{{ veiculo.cor if veiculo else '' }}" 
+                               placeholder="Ex: Preto, Branco, Prata">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="combustivel">Combustível</label>
+                        <input type="text" id="combustivel" name="combustivel" 
+                               value="{{ veiculo.combustivel if veiculo else '' }}" 
+                               placeholder="Ex: Flex, Gasolina, Diesel">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="km_rodados">KM Rodados</label>
+                        <input type="number" id="km_rodados" name="km_rodados" 
+                               value="{{ veiculo.km_rodados if veiculo else '0' }}" 
+                               min="0">
+                    </div>
+                    
+                    {% if veiculo %}
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="disponivel" {% if veiculo.disponivel %}checked{% endif %}>
+                            <span>Disponível para venda</span>
+                        </label>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="foto">Foto do Veículo</label>
+                    <input type="file" id="foto" name="foto" accept="image/*">
+                    <small>Aceitamos imagens PNG, JPG, JPEG até 5MB</small>
+                    {% if veiculo and veiculo.foto %}
+                        <p>Foto atual:</p>
+                        <img src="{{ url_for('static', filename=veiculo.foto.replace('views/static/', '')) }}" alt="Foto atual" style="max-width: 200px; margin-top: 10px;">
+                    {% endif %}
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        {% if veiculo %}Atualizar{% else %}Cadastrar{% endif %}
+                    </button>
+                    <a href="{{ url_for('veiculo.listar_veiculos') }}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

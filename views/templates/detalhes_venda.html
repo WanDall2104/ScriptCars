@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes da Venda - Concessionária Premium{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="details-container">
+            <div class="details-header">
+                <h1 class="page-title">Detalhes da Venda #{{ venda.id_venda }}</h1>
+                <a href="{{ url_for('venda.listar_vendas') }}" class="btn btn-secondary">← Voltar</a>
+            </div>
+            
+            <div class="details-grid">
+                <div class="detail-card">
+                    <h3>Informações da Venda</h3>
+                    <dl>
+                        <dt>Data da Venda:</dt>
+                        <dd>{{ venda.data_venda.strftime('%d/%m/%Y') if venda.data_venda else '-' }}</dd>
+                        
+                        <dt>Valor Final:</dt>
+                        <dd><strong>R$ {{ "%.2f"|format(venda.valor_final) }}</strong></dd>
+                        
+                        {% if venda.forma_pagamento %}
+                            <dt>Forma de Pagamento:</dt>
+                            <dd>{{ venda.forma_pagamento }}</dd>
+                        {% endif %}
+                        
+                        {% if venda.observacoes %}
+                            <dt>Observações:</dt>
+                            <dd>{{ venda.observacoes }}</dd>
+                        {% endif %}
+                    </dl>
+                </div>
+                
+                <div class="detail-card">
+                    <h3>Cliente</h3>
+                    <dl>
+                        <dt>Nome:</dt>
+                        <dd>{{ venda.nome_cliente }}</dd>
+                        
+                        {% if venda.cpf_cliente %}
+                            <dt>CPF:</dt>
+                            <dd>{{ venda.cpf_cliente }}</dd>
+                        {% endif %}
+                    </dl>
+                </div>
+                
+                <div class="detail-card">
+                    <h3>Vendedor</h3>
+                    <dl>
+                        <dt>Nome:</dt>
+                        <dd>{{ venda.nome_funcionario }}</dd>
+                    </dl>
+                </div>
+                
+                <div class="detail-card">
+                    <h3>Veículo</h3>
+                    <dl>
+                        <dt>Modelo:</dt>
+                        <dd>{{ venda.modelo_veiculo }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Nova Venda - Concessionária Premium{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="form-container">
+            <h1 class="page-title">Registrar Nova Venda</h1>
+            
+            <form method="POST" action="{{ url_for('venda.nova_venda') }}" class="form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_cliente">Cliente *</label>
+                        <select id="id_cliente" name="id_cliente" required>
+                            <option value="">Selecione um cliente</option>
+                            {% for cliente in clientes %}
+                                <option value="{{ cliente.id_cliente }}">{{ cliente.nome }} - {{ cliente.cpf }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_veiculo">Veículo *</label>
+                        <select id="id_veiculo" name="id_veiculo" required>
+                            <option value="">Selecione um veículo</option>
+                            {% for veiculo in veiculos %}
+                                <option value="{{ veiculo.id_veiculo }}">
+                                    {{ veiculo.marca }} {{ veiculo.modelo }} {{ veiculo.ano }} - R$ {{ "%.2f"|format(veiculo.preco) }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="valor_final">Valor Final (R$) *</label>
+                        <input type="number" id="valor_final" name="valor_final" required 
+                               step="0.01" min="0" 
+                               placeholder="Valor final da venda">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="forma_pagamento">Forma de Pagamento</label>
+                        <select id="forma_pagamento" name="forma_pagamento">
+                            <option value="">Selecione</option>
+                            <option value="À vista">À vista</option>
+                            <option value="Financiamento">Financiamento</option>
+                            <option value="Cartão de Crédito">Cartão de Crédito</option>
+                            <option value="Cartão de Débito">Cartão de Débito</option>
+                            <option value="Transferência">Transferência</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="observacoes">Observações</label>
+                    <textarea id="observacoes" name="observacoes" rows="4" 
+                              placeholder="Observações sobre a venda (opcional)"></textarea>
+                </div>
+                
+                <div class="info-box">
+                    <p>💡 O veículo será automaticamente marcado como indisponível após o registro da venda.</p>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Registrar Venda</button>
+                    <a href="{{ url_for('venda.listar_vendas') }}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

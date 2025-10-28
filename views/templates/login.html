@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Concessionária Premium{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1 class="auth-title">Login</h1>
+            <p class="auth-subtitle">Acesse sua conta para continuar</p>
+            
+            <form method="POST" action="{{ url_for('auth.fazer_login') }}" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="seu@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" required placeholder="Sua senha">
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" name="lembrar" id="lembrar">
+                        <span>Lembrar senha</span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+            </form>
+            
+            <div class="auth-links">
+                <p>Não tem uma conta? <a href="{{ url_for('auth.cadastro') }}">Cadastre-se aqui</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

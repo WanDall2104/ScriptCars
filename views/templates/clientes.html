@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Clientes - Concessionária Premium{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Gerenciar Clientess</h1>
+            <a href="{{ url_for('cliente.formulario_novo_cliente') }}" class="btn btn-primary">
+                + Novo Cliente
+            </a>
+        </div>
+        
+        {% if clientes %}
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th>Telefone</th>
+                            <th>Email</th>
+                            <th>Endereço</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in clientes %}
+                            <tr>
+                                <td>{{ cliente.id_cliente }}</td>
+                                <td>{{ cliente.nome }}</td>
+                                <td>{{ cliente.cpf }}</td>
+                                <td>{{ cliente.telefone or '-' }}</td>
+                                <td>{{ cliente.email or '-' }}</td>
+                                <td>{{ cliente.endereco or '-' }}</td>
+                                <td class="actions">
+                                    <a href="{{ url_for('cliente.formulario_editar_cliente', id=cliente.id_cliente) }}" class="btn-icon">✏️</a>
+                                    <a href="{{ url_for('cliente.excluir_cliente', id=cliente.id_cliente) }}" 
+                                       class="btn-icon btn-delete" 
+                                       onclick="return confirm('Deseja realmente excluir este cliente?')">🗑️</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>Nenhum cliente cadastrado ainda.</p>
+                <a href="{{ url_for('cliente.formulario_novo_cliente') }}" class="btn btn-primary">Cadastrar Primeiro Cliente</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

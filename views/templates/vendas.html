@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Vendas - Concessionária Premium{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Gerenciar Vendas</h1>
+            <a href="{{ url_for('venda.formulario_nova_venda') }}" class="btn btn-primary">
+                + Nova Venda
+            </a>
+        </div>
+        
+        {% if vendas %}
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Veículo</th>
+                            <th>Ano</th>
+                            <th>Valor</th>
+                            <th>Vendedor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for venda in vendas %}
+                            <tr>
+                                <td>{{ venda.id_venda }}</td>
+                                <td>{{ venda.data_venda.strftime('%d/%m/%Y') if venda.data_venda else '-' }}</td>
+                                <td>{{ venda.nome_cliente }}</td>
+                                <td>{{ venda.marca }} {{ venda.modelo }}</td>
+                                <td>{{ venda.ano_veiculo }}</td>
+                                <td><strong>R$ {{ "%.2f"|format(venda.valor_final) }}</strong></td>
+                                <td>{{ venda.nome_funcionario }}<br><small>{{ venda.cargo }}</small></td>
+                                <td class="actions">
+                                    <a href="{{ url_for('venda.detalhes_venda', id=venda.id_venda) }}" class="btn-icon">👁️</a>
+                                    <a href="{{ url_for('venda.excluir_venda', id=venda.id_venda) }}" 
+                                       class="btn-icon btn-delete" 
+                                       onclick="return confirm('Deseja realmente excluir esta venda?')">🗑️</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>Nenhuma venda registrada ainda.</p>
+                <a href="{{ url_for('venda.formulario_nova_venda') }}" class="btn btn-primary">Registrar Primeira Venda</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
