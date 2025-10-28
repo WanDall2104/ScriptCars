@@ -1,5 +1,6 @@
 # 🚗 Sistema de Gestão de Concessionária
 
+Projeto Acadêmico para disciplina Backend Development - UniSenaiPR
 Sistema completo de gestão para concessionária com CRUD de clientes, veículos, funcionários e vendas.
 
 ## 📋 Características
@@ -105,9 +106,9 @@ projetofinalbackend/
 │   ├── vendas.html             # Lista de vendas
 │   └── form_*.html             # Formulários de CRUD
 └── static/                     # Arquivos estáticos
-    ├── css/
-    │   └── style.css           # Estilos CSS
-    └── uploads/                 # Fotos dos veículos
+|   └── uploads/                # Fotos dos veículos
+│   ├── style.css               # Estilos CSS
+   
 ```
 
 ## 🎯 Funcionalidades
@@ -132,7 +133,7 @@ projetofinalbackend/
 ### Upload de Arquivos
 - Upload de fotos de veículos
 - Validação de tipo e tamanho de arquivo
-- Armazenamento em `static/uploads/`
+- Armazenamento em `views/static/uploads/`
 
 ## 🔒 Segurança
 
@@ -170,12 +171,18 @@ projetofinalbackend/
 ## 📝 Observações
 
 - O banco de dados usa MySQL. Certifique-se de que o MySQL está rodando antes de iniciar a aplicação.
-- As fotos dos veículos são salvas na pasta `static/uploads/`. Certifique-se de que esta pasta existe e tem permissões de escrita.
+- As fotos dos veículos são salvas na pasta `views/static/uploads/`. Certifique-se de que esta pasta existe e tem permissões de escrita.
 - A senha padrão do admin é "admin123". Recomenda-se alterar para produção.
 
 ## 👨‍💻 Desenvolvido por
 
 Projeto desenvolvido como projeto final da disciplina de Backend Development.
+
+Membros da equipe:
+Caio Ribeiro de Oliveira
+Daniel Nogueira Machado
+Gabriel Wan Dall Parra
+Luiz Henrique Machado
 
 ---
 
