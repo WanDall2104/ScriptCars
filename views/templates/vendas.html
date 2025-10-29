@@ -7,9 +7,13 @@
     <div class="container">
         <div class="page-header">
             <h1 class="page-title">Gerenciar Vendas</h1>
-            <a href="{{ url_for('venda.formulario_nova_venda') }}" class="btn btn-primary">
-                + Nova Venda
-            </a>
+            {% if logged_in %}
+                <div class="actions-buttons">
+                    <a href="{{ url_for('venda.formulario_nova_venda') }}" class="btn btn-primary" title="Adicionar nova venda">
+                        <i class="fa-solid fa-plus"></i> Nova Venda
+                    </a>
+                </div>
+            {% endif %}
         </div>
         
         {% if vendas %}

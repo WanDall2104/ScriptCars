@@ -8,12 +8,13 @@
         <div class="page-header">
             <h1 class="page-title">Gerenciar Veículos</h1>
             {% if logged_in %}
-                <a href="{{ url_for('veiculo.formulario_novo_veiculo') }}" class="btn btn-primary">
-                    + Novo Veículo
-                </a>
+                <div class="actions-buttons">
+                    <a href="{{ url_for('veiculo.listar_veiculos_disponiveis') }}" class="btn btn-secondary" title="Gerenciar estoque">
+                        <i class="fa-solid fa-arrow-left"></i> Voltar para Veículos Disponíveis
+                    </a>
+                </div>
             {% endif %}
-        </div>
-        
+        </div> 
         {% if veiculos %}
             <div class="vehicles-grid">
                 {% for veiculo in veiculos %}
