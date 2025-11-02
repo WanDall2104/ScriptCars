@@ -28,6 +28,14 @@ def criar_pasta_uploads():
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
 
+def deletar_foto(foto_path):
+    """Deleta uma foto do sistema de arquivos se ela existir"""
+    if foto_path and os.path.exists(foto_path):
+        try:
+            os.remove(foto_path)
+        except Exception as e:
+            print(f"Erro ao deletar foto: {str(e)}")  # Log do erro, mas não interrompe o fluxo
+
 @veiculo_bp.route('/veiculos')
 def listar_veiculos():
     """Lista todos os veículos (página pública quando não logado)"""
@@ -89,7 +97,8 @@ def novo_veiculo():
                 
                 filepath = os.path.join(UPLOAD_FOLDER, filename)
                 file.save(filepath)
-                foto = filepath
+                # Normaliza o caminho para usar barras (/)
+                foto = filepath.replace('\\', '/')
         
         # Adiciona veículo
         veiculo_model.adicionar_veiculo(marca, modelo, ano, preco, foto, km_rodados, cor, combustivel)
@@ -132,6 +141,10 @@ def editar_veiculo(id):
             flash("Todos os campos são obrigatórios!", "error")
             return redirect(url_for('veiculo.formulario_editar_veiculo', id=id))
         
+        # Busca a foto atual do veículo
+        veiculo_atual = veiculo_model.obter_veiculo(id)
+        foto_antiga = veiculo_atual.get('foto') if veiculo_atual else None
+        
         # Processa upload de nova foto (se fornecida)
         foto = None
         if 'foto' in request.files:
@@ -145,10 +158,15 @@ def editar_veiculo(id):
                 
                 filepath = os.path.join(UPLOAD_FOLDER, filename)
                 file.save(filepath)
-                foto = filepath
+                # Normaliza o caminho para usar barras (/)
+                foto = filepath.replace('\\', '/')
+                
+                # Deleta a foto antiga se existir e se for diferente da nova
+                if foto_antiga and foto_antiga != foto:
+                    deletar_foto(foto_antiga)
         
         # Atualiza veículo
-        veiculo_model.atualizar_veiculo(id, marca, modelo, ano, preco, disponivel, km_rodados, cor, combustivel)
+        veiculo_model.atualizar_veiculo(id, marca, modelo, ano, preco, disponivel, km_rodados, cor, combustivel, foto)
         flash("Veículo atualizado com sucesso!", "success")
         return redirect(url_for('veiculo.listar_veiculos'))
     except ValueError as e:
@@ -168,7 +186,16 @@ def excluir_veiculo(id):
             flash("Não é possível excluir veículo que já possui vendas associadas!", "error")
             return redirect(url_for('veiculo.listar_veiculos'))
         
+        # Busca o veículo para pegar a foto
+        veiculo = veiculo_model.obter_veiculo(id)
+        
+        # Exclui veículo
         veiculo_model.excluir_veiculo(id)
+        
+        # Deleta a foto do veículo se existir
+        if veiculo and veiculo.get('foto'):
+            deletar_foto(veiculo['foto'])
+        
         flash("Veículo excluído com sucesso!", "success")
     except Exception as e:
         flash(f"Erro ao excluir veículo: {str(e)}", "error")

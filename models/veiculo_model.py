@@ -70,7 +70,7 @@ def adicionar_veiculo(marca, modelo, ano, preco, foto=None, km_rodados=0, cor=No
     finally:
         conn.close()
 
-def atualizar_veiculo(id_veiculo, marca, modelo, ano, preco, disponivel=None, km_rodados=None, cor=None, combustivel=None):
+def atualizar_veiculo(id_veiculo, marca, modelo, ano, preco, disponivel=None, km_rodados=None, cor=None, combustivel=None, foto=None):
     """Atualiza um veículo"""
     # Validação dos campos obrigatórios
     if not marca or not modelo or not ano or not preco:
@@ -123,6 +123,9 @@ def atualizar_veiculo(id_veiculo, marca, modelo, ano, preco, disponivel=None, km
         if combustivel:
             campos.append("combustivel=%s")
             valores.append(combustivel)
+        if foto:
+            campos.append("foto=%s")
+            valores.append(foto)
         
         valores.append(id_veiculo)
         query = f"UPDATE veiculos SET {', '.join(campos)} WHERE id_veiculo=%s"
