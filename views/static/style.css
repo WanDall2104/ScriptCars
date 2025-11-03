@@ -19,6 +19,7 @@
     --secondary-color: #cbd5e1;
     --success-color: #22c55e;
     --danger-color: #DC3545;
+    --danger-dark: #721c24;
     --warning-color: #f59e0b;
     --info-color: #6b7280;
     
@@ -205,22 +206,22 @@ body {
 
 .alert-success {
     background: linear-gradient(90deg, rgba(51, 204, 255, 0.15), rgba(168, 223, 255, 0.1));
-    color: var(--text-dark);
+    color: var(--card-bg);
     border-left: 4px solid var(--success-color);
     border-radius: 8px;
 }
 
 .alert-error {
     background: linear-gradient(90deg, rgba(220, 53, 69, 0.15), rgba(255, 200, 200, 0.1));
-    color: #721c24;
+    color: var(--danger-dark);
     border-left: 4px solid var(--danger-color);
     border-radius: 8px;
 }
 
 .alert-info {
     background: linear-gradient(90deg, rgba(30, 144, 255, 0.15), rgba(168, 223, 255, 0.1));
-    color: var(--primary-dark);
-    border-left: 4px solid var(--primary-color);
+    color: var(--card-bg);
+    border-left: 4px solid var(--info-color);
     border-radius: 8px;
 }
 
