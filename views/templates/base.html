@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Concessionária Premium{% endblock %}</title>
+    <title>{% block title %}Script Cars{% endblock %}</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='uploads/logo.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" referrerpolicy="no-referrer" />
 </head>
@@ -12,7 +13,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
-                <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='uploads/logo-nav.png') }}" alt="Concessionária Premium" class="logo"></a>
+                <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='uploads/logo-nav.png') }}" alt="Script Cars" class="logo"></a>
             </div>
             <ul class="nav-menu">
                 <li><a href="{{ url_for('home') }}">Home</a></li>
