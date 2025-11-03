@@ -21,16 +21,26 @@
                 <li><a href="{{ url_for('veiculo.listar_veiculos_disponiveis') }}">Veículos</a></li>
                 
                 {% if logged_in %}
-                    <li><a href="{{ url_for('cliente.listar_clientes') }}">Clientes</a></li>
-                    <li><a href="{{ url_for('venda.listar_vendas') }}">Vendas</a></li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('veiculo.listar_veiculos') }}"><i class="fa-solid fa-warehouse"></i> Gerenciar Veículos</a></li>
-                            <li><a href="{{ url_for('funcionario.listar_funcionarios') }}"><i class="fa-solid fa-users"></i> Funcionários</a></li>
-                            <li><a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
-                        </ul>
-                    </li>
+                    {% if user_tipo == 'funcionario' %}
+                        <li><a href="{{ url_for('cliente.listar_clientes') }}">Clientes</a></li>
+                        <li><a href="{{ url_for('venda.listar_vendas') }}">Vendas</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('veiculo.listar_veiculos') }}"><i class="fa-solid fa-warehouse"></i> Gerenciar Veículos</a></li>
+                                <li><a href="{{ url_for('funcionario.listar_funcionarios') }}"><i class="fa-solid fa-users"></i> Funcionários</a></li>
+                                <li><a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('cliente.perfil_cliente') }}"><i class="fa-solid fa-id-card"></i> Meu Perfil</a></li>
+                                <li><a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
                 {% else %}
                     <li><a href="{{ url_for('auth.login') }}" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
                     <li><a href="{{ url_for('auth.cadastro') }}" class="btn-cadastro"><i class="fa-solid fa-user-plus"></i> Cadastrar</a></li>

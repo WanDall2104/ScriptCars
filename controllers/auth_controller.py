@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, make_response
-from models import funcionario_model
+from models import funcionario_model, cliente_model
 from datetime import timedelta
 
 auth_bp = Blueprint('auth', __name__)
@@ -22,30 +22,31 @@ def fazer_login():
         return redirect(url_for('auth.login'))
     
     try:
-        # Busca funcionário no banco
-        funcionario = funcionario_model.obter_funcionario_por_email(email)
-        
-        if not funcionario:
-            flash("Email ou senha inválidos!", "error")
-            return redirect(url_for('auth.login'))
-        
-        # Verifica senha
-        if not funcionario_model.verificar_senha(senha, funcionario['senha_hash']):
-            flash("Email ou senha inválidos!", "error")
-            return redirect(url_for('auth.login'))
-        
-        # Cria sessão
-        session['user_id'] = funcionario['id_funcionario']
-        session['user_nome'] = funcionario['nome']
-        session['user_email'] = funcionario['email']
-        session['user_cargo'] = funcionario['cargo']
+        # 1) Tenta logar como cliente (padrão para público)
+        cliente = cliente_model.obter_cliente_por_email(email)
+        if cliente and cliente.get('senha_hash') and cliente_model.verificar_senha(senha, cliente['senha_hash']):
+            session['user_id'] = cliente['id_cliente']
+            session['user_nome'] = cliente.get('username') or cliente['nome']
+            session['user_email'] = cliente['email']
+            session['user_tipo'] = 'cliente'
+        else:
+            # 2) Fallback: tenta logar como funcionário (para área administrativa)
+            funcionario = funcionario_model.obter_funcionario_por_email(email)
+            if not funcionario or not funcionario_model.verificar_senha(senha, funcionario['senha_hash']):
+                flash("Email ou senha inválidos!", "error")
+                return redirect(url_for('auth.login'))
+            session['user_id'] = funcionario['id_funcionario']
+            session['user_nome'] = funcionario['nome']
+            session['user_email'] = funcionario['email']
+            session['user_cargo'] = funcionario['cargo']
+            session['user_tipo'] = 'funcionario'
         
         # Se o usuário pediu para lembrar, define cookie
         if lembrar:
             session.permanent = True
             session.permanent_session_lifetime = timedelta(days=30)
         
-        flash(f"Bem-vindo, {funcionario['nome']}!", "success")
+        flash(f"Bem-vindo, {session['user_nome']}!", "success")
         return redirect(url_for('home'))
     
     except Exception as e:
@@ -68,28 +69,31 @@ def cadastro():
 
 @auth_bp.route('/cadastro', methods=['POST'])
 def fazer_cadastro():
-    """Processa o cadastro de novo funcionário"""
+    """Processa o cadastro de novo cliente (padrão público)."""
+    username = request.form.get('username', '').strip() or None
     nome = request.form.get('nome', '').strip()
+    cpf = request.form.get('cpf', '').strip()
+    telefone = request.form.get('telefone', '').strip()
     email = request.form.get('email', '').strip()
+    endereco = request.form.get('endereco', '').strip()
     senha = request.form.get('senha', '')
     confirmar_senha = request.form.get('confirmar_senha', '')
-    cargo = request.form.get('cargo', '').strip()
-    
+
     # Validações
-    if not nome or not email or not senha or not cargo:
-        flash("Todos os campos são obrigatórios!", "error")
+    if not nome or not email or not senha or not cpf:
+        flash("Nome, email, senha e CPF são obrigatórios!", "error")
         return redirect(url_for('auth.cadastro'))
-    
+
     if len(senha) < 6:
         flash("A senha deve ter pelo menos 6 caracteres!", "error")
         return redirect(url_for('auth.cadastro'))
-    
+
     if senha != confirmar_senha:
         flash("As senhas não coincidem!", "error")
         return redirect(url_for('auth.cadastro'))
-    
+
     try:
-        funcionario_model.adicionar_funcionario(nome, email, senha, cargo)
+        cliente_model.adicionar_cliente_com_senha(nome, cpf, telefone, email, endereco, senha, username)
         flash("Cadastro realizado com sucesso! Faça login para continuar.", "success")
         return redirect(url_for('auth.login'))
     except ValueError as e:

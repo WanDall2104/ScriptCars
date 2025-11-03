@@ -59,7 +59,8 @@ def injetar_usuario():
     return {
         'logged_in': 'user_id' in session,
         'user_nome': session.get('user_nome', ''),
-        'user_cargo': session.get('user_cargo', '')
+        'user_cargo': session.get('user_cargo', ''),
+        'user_tipo': session.get('user_tipo', None)
     }
 
 @app.before_request

@@ -1,4 +1,5 @@
 from config import get_db_connection
+import bcrypt
 
 def listar_clientes():
     """Lista todos os clientes"""
@@ -46,6 +47,98 @@ def adicionar_cliente(nome, cpf, telefone, email, endereco):
         """, (nome, cpf, telefone, email, endereco))
         conn.commit()
         return cursor.lastrowid
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        conn.close()
+
+def obter_cliente_por_email(email):
+    """Obtém cliente por email para login"""
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM clientes WHERE email = %s", (email,))
+        return cursor.fetchone()
+    finally:
+        conn.close()
+
+def verificar_senha(senha_digitada, senha_hash_banco):
+    """Verifica senha do cliente (se coluna existir)."""
+    if not senha_hash_banco:
+        return False
+    return bcrypt.checkpw(senha_digitada.encode('utf-8'), senha_hash_banco.encode('utf-8'))
+
+def adicionar_cliente_com_senha(nome, cpf, telefone, email, endereco, senha, username=None):
+    """Adiciona um cliente com credenciais de acesso."""
+    if not nome or not cpf or not email or not senha:
+        raise ValueError("Nome, CPF, email e senha são obrigatórios")
+    cpf_limpo = cpf.replace('.', '').replace('-', '')
+    if len(cpf_limpo) != 11 or not cpf_limpo.isdigit():
+        raise ValueError("CPF inválido")
+    if '@' not in email:
+        raise ValueError("Email inválido")
+
+    senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        # Tenta inserir incluindo colunas opcionais (username, senha_hash)
+        cursor.execute(
+            """
+            INSERT INTO clientes (nome, cpf, telefone, email, endereco, senha_hash, username)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """,
+            (nome, cpf, telefone, email, endereco, senha_hash, username)
+        )
+        conn.commit()
+        return cursor.lastrowid
+    except Exception as e:
+        conn.rollback()
+        # Caso a tabela ainda não tenha as colunas, sinaliza claramente
+        raise e
+    finally:
+        conn.close()
+
+def atualizar_perfil_cliente(id_cliente, username, nome, email, cpf, telefone, endereco):
+    """Atualiza dados do perfil do cliente."""
+    if not nome or not email or not cpf:
+        raise ValueError("Nome, email e CPF são obrigatórios")
+    cpf_limpo = cpf.replace('.', '').replace('-', '')
+    if len(cpf_limpo) != 11 or not cpf_limpo.isdigit():
+        raise ValueError("CPF inválido")
+    if '@' not in email:
+        raise ValueError("Email inválido")
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            """
+            UPDATE clientes
+            SET username=%s, nome=%s, email=%s, cpf=%s, telefone=%s, endereco=%s
+            WHERE id_cliente=%s
+            """,
+            (username, nome, email, cpf, telefone, endereco, id_cliente)
+        )
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        conn.close()
+
+def atualizar_senha_cliente(id_cliente, nova_senha):
+    """Atualiza a senha do cliente."""
+    if len(nova_senha) < 6:
+        raise ValueError("A senha deve ter pelo menos 6 caracteres")
+    senha_hash = bcrypt.hashpw(nova_senha.encode('utf-8'), bcrypt.gensalt())
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("UPDATE clientes SET senha_hash=%s WHERE id_cliente=%s", (senha_hash, id_cliente))
+        conn.commit()
     except Exception as e:
         conn.rollback()
         raise e

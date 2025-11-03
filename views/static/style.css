@@ -210,23 +210,26 @@ body {
 
 .alert-success {
     background: linear-gradient(90deg, rgba(51, 204, 255, 0.15), rgba(168, 223, 255, 0.1));
-    color: var(--card-color);
+    color: var(--text-dark);
     border-left: 4px solid var(--success-color);
     border-radius: 8px;
+    font-weight: 650;
 }
 
 .alert-error {
     background: linear-gradient(90deg, rgba(220, 53, 69, 0.15), rgba(255, 200, 200, 0.1));
-    color: var(--card-bg);
+    color: var(--text-dark);
     border-left: 4px solid var(--danger-color);
     border-radius: 8px;
+    font-weight: 650;
 }
 
 .alert-info {
     background: linear-gradient(90deg, rgba(30, 144, 255, 0.15), rgba(168, 223, 255, 0.1));
-    color: var(--card-bg);
+    color: var(--text-dark);
     border-left: 4px solid var(--info-color);
     border-radius: 8px;
+    font-weight: 650;
 }
 
 /* ========== HERO SECTION ========== */
