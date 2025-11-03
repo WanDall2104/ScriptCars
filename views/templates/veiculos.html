@@ -43,7 +43,7 @@
                             </div>
                             
                             <div class="vehicle-price">
-                                <strong>R$ {{ "%.2f"|format(veiculo.preco) }}</strong>
+                                <strong>{{ veiculo.preco|moeda_brl }}</strong>
                             </div>
                             
                             <div class="vehicle-actions">

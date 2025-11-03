@@ -48,7 +48,7 @@
                             </div>
                             
                             <div class="vehicle-price">
-                                <strong>R$ {{ "%.2f"|format(veiculo.preco) }}</strong>
+                                <strong>{{ veiculo.preco|moeda_brl }}</strong>
                             </div>
                             
                             {% if veiculo.disponivel %}

@@ -39,7 +39,7 @@
                                 <td>{{ venda.nome_cliente }}</td>
                                 <td>{{ venda.marca }} {{ venda.modelo }}</td>
                                 <td>{{ venda.ano_veiculo }}</td>
-                                <td><strong>R$ {{ "%.2f"|format(venda.valor_final) }}</strong></td>
+                                <td><strong>{{ venda.valor_final|moeda_brl }}</strong></td>
                                 <td>{{ venda.nome_funcionario }}<br><small>{{ venda.cargo }}</small></td>
                                 <td class="actions">
                                     <a href="{{ url_for('venda.detalhes_venda', id=venda.id_venda) }}" class="btn-icon" title="Detalhes">

@@ -21,6 +21,18 @@ app.register_blueprint(venda_bp)
 
 # ========== PÁGINAS PÚBLICAS ==========
 
+# Filtro de formatação monetária BRL para templates Jinja
+@app.template_filter('moeda_brl')
+def moeda_brl(valor):
+    """Formata número no padrão monetário brasileiro, ex: 12345.6 -> R$ 12.345,60"""
+    try:
+        numero = float(valor) if valor is not None else 0.0
+        # Usa separador de milhar com vírgula, depois troca pontuação para padrão BR
+        formatado = f"{numero:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+        return f"R$ {formatado}"
+    except Exception:
+        return f"R$ {valor}"
+
 @app.route('/')
 def home():
     """Página inicial pública"""
