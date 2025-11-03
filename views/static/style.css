@@ -877,6 +877,40 @@ body {
     margin: 0.5rem 0;
 }
 
+.footer-link {
+    color: var(--accent-dark);
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    color: var(--accent-color);
+    transform: scale(1.2);
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.logo-footer {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    margin-bottom: -0.2rem;
+    margin-right: 0.3rem;
+    border-radius: 50%;
+    border: 2px solid var(--accent-color);
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.logo-footer:hover {
+    transform: scale(1.2);
+    transition: all 0.3s;
+    color: var(--accent-color);
+    text-decoration: none;  
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
     .hero-title {
