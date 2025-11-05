@@ -1,8 +1,16 @@
-from config import get_db_connection
+from config import Config
+import mysql.connector
+
+def inicia_bd():
+    try:
+        return mysql.connector.connect(**Config.DB_CONFIG)
+    except mysql.connector.Error as err:
+        print(f"Erro de conexão com o BD: {err}")
+        return None
 
 def listar_vendas():
     """Lista todas as vendas com informações relacionadas"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute("""
@@ -23,7 +31,7 @@ def listar_vendas():
 
 def obter_venda(id_venda):
     """Obtém uma venda específica por ID"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute("""
@@ -53,7 +61,7 @@ def adicionar_venda(id_cliente, id_veiculo, id_funcionario, valor_final, forma_p
     except ValueError:
         raise ValueError("Valor inválido")
     
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         # Verifica se veículo está disponível
@@ -79,9 +87,65 @@ def adicionar_venda(id_cliente, id_veiculo, id_funcionario, valor_final, forma_p
     finally:
         conn.close()
 
+def atualizar_venda(id_venda, id_cliente, id_veiculo, id_funcionario, valor_final, forma_pagamento=None, observacoes=None):
+    """Atualiza uma venda existente"""
+    # Validação dos campos obrigatórios
+    if not id_cliente or not id_veiculo or not id_funcionario or not valor_final:
+        raise ValueError("Todos os campos são obrigatórios")
+    
+    # Validação de valor
+    try:
+        valor_float = float(valor_final)
+        if valor_float <= 0:
+            raise ValueError("Valor deve ser maior que zero")
+    except ValueError:
+        raise ValueError("Valor inválido")
+    
+    conn = inicia_bd()
+    cursor = conn.cursor()
+    try:
+        # Obtém o veículo atual da venda
+        cursor.execute("SELECT id_veiculo FROM vendas WHERE id_venda=%s", (id_venda,))
+        venda_atual = cursor.fetchone()
+        
+        if not venda_atual:
+            raise ValueError("Venda não encontrada")
+        
+        veiculo_antigo_id = venda_atual[0]
+        
+        # Se o veículo mudou, precisa liberar o antigo e reservar o novo
+        if veiculo_antigo_id != int(id_veiculo):
+            # Libera o veículo antigo
+            cursor.execute("UPDATE veiculos SET disponivel=TRUE WHERE id_veiculo=%s", (veiculo_antigo_id,))
+            
+            # Verifica se o novo veículo está disponível
+            cursor.execute("SELECT disponivel FROM veiculos WHERE id_veiculo=%s", (id_veiculo,))
+            result = cursor.fetchone()
+            if not result or not result[0]:
+                conn.rollback()
+                raise ValueError("Veículo não está disponível")
+            
+            # Reserva o novo veículo
+            cursor.execute("UPDATE veiculos SET disponivel=FALSE WHERE id_veiculo=%s", (id_veiculo,))
+        
+        # Atualiza a venda
+        cursor.execute("""
+            UPDATE vendas 
+            SET id_cliente=%s, id_veiculo=%s, id_funcionario=%s, valor_final=%s, 
+                forma_pagamento=%s, observacoes=%s
+            WHERE id_venda=%s
+        """, (id_cliente, id_veiculo, id_funcionario, valor_final, forma_pagamento, observacoes, id_venda))
+        
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        conn.close()
+
 def excluir_venda(id_venda):
     """Exclui uma venda e marca o veículo como disponível novamente"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         # Obtém o ID do veículo antes de excluir
@@ -104,7 +168,7 @@ def excluir_venda(id_venda):
 
 def obter_relatorio_vendas(data_inicio=None, data_fim=None):
     """Gera relatório de vendas no período especificado"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor(dictionary=True)
     try:
         if data_inicio and data_fim:

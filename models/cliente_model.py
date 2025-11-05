@@ -1,9 +1,17 @@
-from config import get_db_connection
+from config import Config
+import mysql.connector
 import bcrypt
+
+def inicia_bd():
+    try:
+        return mysql.connector.connect(**Config.DB_CONFIG)
+    except mysql.connector.Error as err:
+        print(f"Erro de conexão com o BD: {err}")
+        return None
 
 def listar_clientes():
     """Lista todos os clientes"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute("SELECT * FROM clientes ORDER BY nome")
@@ -14,7 +22,7 @@ def listar_clientes():
 
 def obter_cliente(id_cliente):
     """Obtém um cliente específico por ID"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute("SELECT * FROM clientes WHERE id_cliente = %s", (id_cliente,))
@@ -38,7 +46,7 @@ def adicionar_cliente(nome, cpf, telefone, email, endereco):
     if email and '@' not in email:
         raise ValueError("Email inválido")
     
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -55,7 +63,7 @@ def adicionar_cliente(nome, cpf, telefone, email, endereco):
 
 def obter_cliente_por_email(email):
     """Obtém cliente por email para login"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute("SELECT * FROM clientes WHERE email = %s", (email,))
@@ -81,7 +89,7 @@ def adicionar_cliente_com_senha(nome, cpf, telefone, email, endereco, senha, use
 
     senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
 
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         # Tenta inserir incluindo colunas opcionais (username, senha_hash)
@@ -111,7 +119,7 @@ def atualizar_perfil_cliente(id_cliente, username, nome, email, cpf, telefone, e
     if '@' not in email:
         raise ValueError("Email inválido")
 
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         cursor.execute(
@@ -134,7 +142,7 @@ def atualizar_senha_cliente(id_cliente, nova_senha):
     if len(nova_senha) < 6:
         raise ValueError("A senha deve ter pelo menos 6 caracteres")
     senha_hash = bcrypt.hashpw(nova_senha.encode('utf-8'), bcrypt.gensalt())
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         cursor.execute("UPDATE clientes SET senha_hash=%s WHERE id_cliente=%s", (senha_hash, id_cliente))
@@ -160,7 +168,7 @@ def atualizar_cliente(id_cliente, nome, cpf, telefone, email, endereco):
     if email and '@' not in email:
         raise ValueError("Email inválido")
     
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -177,7 +185,7 @@ def atualizar_cliente(id_cliente, nome, cpf, telefone, email, endereco):
 
 def excluir_cliente(id_cliente):
     """Exclui um cliente"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         cursor.execute("DELETE FROM clientes WHERE id_cliente=%s", (id_cliente,))
@@ -190,7 +198,7 @@ def excluir_cliente(id_cliente):
 
 def cliente_ja_tem_vendas(id_cliente):
     """Verifica se cliente tem vendas associadas"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT COUNT(*) as total FROM vendas WHERE id_cliente=%s", (id_cliente,))

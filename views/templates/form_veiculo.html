@@ -1,99 +1,171 @@
-{% extends "base.html" %}
-
-{% block title %}{% if veiculo %}Editar{% else %}Novo{% endif %} Veículo - Concessionária Premium{% endblock %}
-
-{% block content %}
-<section class="page-section">
-    <div class="container">
-        <div class="form-container">
-            <h1 class="page-title">{% if veiculo %}Editar{% else %}Novo{% endif %} Veículo</h1>
-            
-            <form method="POST" action="{% if veiculo %}{{ url_for('veiculo.editar_veiculo', id=veiculo.id_veiculo) }}{% else %}{{ url_for('veiculo.novo_veiculo') }}{% endif %}" 
-                  enctype="multipart/form-data" class="form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="marca">Marca *</label>
-                        <input type="text" id="marca" name="marca" required 
-                               value="{{ veiculo.marca if veiculo else '' }}" 
-                               placeholder="Ex: Toyota, Honda">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="modelo">Modelo *</label>
-                        <input type="text" id="modelo" name="modelo" required 
-                               value="{{ veiculo.modelo if veiculo else '' }}" 
-                               placeholder="Ex: Corolla, Civic">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="ano">Ano *</label>
-                        <input type="number" id="ano" name="ano" required 
-                               value="{{ veiculo.ano if veiculo else '' }}" 
-                               min="1900" max="2025">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="preco">Preço (R$) *</label>
-                        <input type="number" id="preco" name="preco" required 
-                               value="{{ veiculo.preco if veiculo else '' }}" 
-                               step="0.01" min="0" placeholder="50000.00">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="cor">Cor</label>
-                        <input type="text" id="cor" name="cor" 
-                               value="{{ veiculo.cor if veiculo else '' }}" 
-                               placeholder="Ex: Preto, Branco, Prata">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="combustivel">Combustível</label>
-                        <input type="text" id="combustivel" name="combustivel" 
-                               value="{{ veiculo.combustivel if veiculo else '' }}" 
-                               placeholder="Ex: Flex, Gasolina, Diesel">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="km_rodados">KM Rodados</label>
-                        <input type="number" id="km_rodados" name="km_rodados" 
-                               value="{{ veiculo.km_rodados if veiculo else '0' }}" 
-                               min="0">
-                    </div>
-                    
-                    {% if veiculo %}
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="disponivel" {% if veiculo.disponivel %}checked{% endif %}>
-                            <span>Disponível para venda</span>
-                        </label>
-                    </div>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if veiculo %}Editar{% else %}Novo{% endif %} Veículo - Concessionária Premium</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='uploads/logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='uploads/logo-nav.png') }}" alt="Script Cars" class="logo"></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+                <li><a href="{{ url_for('listar_veiculos_disponiveis') }}">Veículos</a></li>
+                {% if logged_in %}
+                    {% if user_tipo == 'funcionario' %}
+                        <li><a href="{{ url_for('listar_clientes') }}">Clientes</a></li>
+                        <li><a href="{{ url_for('listar_vendas') }}">Vendas</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('listar_veiculos') }}"><i class="fa-solid fa-warehouse"></i> Gerenciar Veículos</a></li>
+                                <li><a href="{{ url_for('listar_funcionarios') }}"><i class="fa-solid fa-users"></i> Funcionários</a></li>
+                                <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('perfil_cliente') }}"><i class="fa-solid fa-id-card"></i> Meu Perfil</a></li>
+                                <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
                     {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    <label for="foto">Foto do Veículo</label>
-                    <input type="file" id="foto" name="foto" accept="image/*">
-                    <small>Aceitamos imagens PNG, JPG, JPEG até 5MB</small>
-                    {% if veiculo and veiculo.foto %}
-                        <p>Foto atual:</p>
-                        <img src="{{ url_for('static', filename=veiculo.foto.replace('views/static/', '')) }}" alt="Foto atual" style="max-width: 200px; margin-top: 10px;">
-                    {% endif %}
-                </div>
-                
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        {% if veiculo %}Atualizar{% else %}Cadastrar{% endif %}
-                    </button>
-                    <a href="{{ url_for('veiculo.listar_veiculos') }}" class="btn btn-secondary">Cancelar</a>
-                </div>
-            </form>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                    <li><a href="{{ url_for('cadastro') }}" class="btn-cadastro"><i class="fa-solid fa-user-plus"></i> Cadastrar</a></li>
+                {% endif %}
+            </ul>
         </div>
-    </div>
-</section>
-{% endblock %}
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="main-content">
+        <section class="page-section">
+            <div class="container">
+                <div class="form-container">
+                    <h1 class="page-title">{% if veiculo %}Editar{% else %}Novo{% endif %} Veículo</h1>
+                    
+                    <form method="POST" action="{% if veiculo %}{{ url_for('editar_veiculo', id=veiculo.id_veiculo) }}{% else %}{{ url_for('novo_veiculo') }}{% endif %}" 
+                          enctype="multipart/form-data" class="form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="marca">Marca *</label>
+                                <input type="text" id="marca" name="marca" required 
+                                       value="{{ veiculo.marca if veiculo else '' }}" 
+                                       placeholder="Ex: Toyota, Honda">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="modelo">Modelo *</label>
+                                <input type="text" id="modelo" name="modelo" required 
+                                       value="{{ veiculo.modelo if veiculo else '' }}" 
+                                       placeholder="Ex: Corolla, Civic">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ano">Ano *</label>
+                                <input type="number" id="ano" name="ano" required 
+                                       value="{{ veiculo.ano if veiculo else '' }}" 
+                                       min="1900" max="2025">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="preco">Preço (R$) *</label>
+                                <input type="number" id="preco" name="preco" required 
+                                       value="{{ veiculo.preco if veiculo else '' }}" 
+                                       step="0.01" min="0" placeholder="50000.00">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cor">Cor</label>
+                                <input type="text" id="cor" name="cor" 
+                                       value="{{ veiculo.cor if veiculo else '' }}" 
+                                       placeholder="Ex: Preto, Branco, Prata">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="combustivel">Combustível</label>
+                                <input type="text" id="combustivel" name="combustivel" 
+                                       value="{{ veiculo.combustivel if veiculo else '' }}" 
+                                       placeholder="Ex: Flex, Gasolina, Diesel">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="km_rodados">KM Rodados</label>
+                                <input type="number" id="km_rodados" name="km_rodados" 
+                                       value="{{ veiculo.km_rodados if veiculo else '0' }}" 
+                                       min="0">
+                            </div>
+                            
+                            {% if veiculo %}
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="disponivel" {% if veiculo.disponivel %}checked{% endif %}>
+                                    <span>Disponível para venda</span>
+                                </label>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="foto">Foto do Veículo</label>
+                            <input type="file" id="foto" name="foto" accept="image/*">
+                            <small>Aceitamos imagens PNG, JPG, JPEG até 5MB</small>
+                            {% if veiculo and veiculo.foto %}
+                                <p>Foto atual:</p>
+                                <img src="{{ url_for('static', filename=veiculo.foto.replace('views/static/', '')) }}" alt="Foto atual" style="max-width: 200px; margin-top: 10px;">
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                {% if veiculo %}Atualizar{% else %}Cadastrar{% endif %}
+                            </button>
+                            <a href="{{ url_for('listar_veiculos') }}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Script Cars. Todos os direitos reservados.</p>
+            <p>Desenvolvido por <a class="footer-link" href="https://github.com/WanDall2104/ScriptCars.git" target="_blank"><img src="{{ url_for('static', filename='uploads/logo-scriptboys.png') }}" alt="Script Boys" class="logo-footer">Script Boys</a> para gestão de vendas automotivas</p>
+        </div>
+    </footer>
+    <script>
+        document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.parentElement.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

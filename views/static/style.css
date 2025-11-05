@@ -56,8 +56,13 @@ body {
     flex-direction: column;
 }
 
+/* Garante Poppins em todos os controles de formulário e botões */
+input, select, textarea, button {
+    font-family: inherit;
+}
+
 .container {
-    max-width: 1200px;
+    max-width: 1270px;
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -499,6 +504,14 @@ body {
     padding: 2rem;
     border-radius: 12px;
     box-shadow: var(--shadow);
+}
+
+/* Ajustes visuais para melhorar hierarquia do formulário */
+.form-container .page-title {
+    margin-bottom: 1.5rem;
+}
+.form-container .form-actions .btn {
+    min-width: 160px;
 }
 
 .form-group {

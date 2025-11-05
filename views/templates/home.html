@@ -1,71 +1,154 @@
-{% extends "base.html" %}
-
-{% block title %}Home - Concessionária Premium{% endblock %}
-
-{% block content %}
-<!-- Banner Hero -->
-<section class="hero">
-    <div class="hero-content">
-        <h1 class="hero-title">Bem-vindo à Script Cars</h1>
-        <p class="hero-subtitle">Os melhores veículos com os melhores preços</p>
-        <div class="hero-buttons">
-            <a href="{{ url_for('veiculo.listar_veiculos_disponiveis') }}" class="btn btn-primary">Ver Veículos</a>
-            <a href="{{ url_for('sobre') }}" class="btn btn-secondary">Sobre Nós</a>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Concessionária Premium</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='uploads/logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" referrerpolicy="no-referrer" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script> 
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='uploads/logo-nav.png') }}" alt="Script Cars" class="logo"></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+                <li><a href="{{ url_for('listar_veiculos_disponiveis') }}">Veículos</a></li>
+                {% if logged_in %}
+                    {% if user_tipo == 'funcionario' %}
+                        <li><a href="{{ url_for('listar_clientes') }}">Clientes</a></li>
+                        <li><a href="{{ url_for('listar_vendas') }}">Vendas</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('listar_veiculos') }}"><i class="fa-solid fa-warehouse"></i> Gerenciar Veículos</a></li>
+                                <li><a href="{{ url_for('listar_funcionarios') }}"><i class="fa-solid fa-users"></i> Funcionários</a></li>
+                                <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('perfil_cliente') }}"><i class="fa-solid fa-id-card"></i> Meu Perfil</a></li>
+                                <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                    <li><a href="{{ url_for('cadastro') }}" class="btn-cadastro"><i class="fa-solid fa-user-plus"></i> Cadastrar</a></li>
+                {% endif %}
+            </ul>
         </div>
-    </div>
-</section>
+    </nav>
 
-<!-- Destaques -->
-<section class="features">
-    <div class="container">
-        <h2 class="section-title">Por que escolher nossa concessionária?</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fa-solid fa-circle-check"></i></div>
-                <h3>Qualidade Garantida</h3>
-                <p>Todos os veículos passam por rigorosa inspeção técnica</p>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
             </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fa-solid fa-sack-dollar"></i></div>
-                <h3>Melhores Preços</h3>
-                <p>Os melhores preços do mercado com condições especiais</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fa-solid fa-rocket"></i></div>
-                <h3>Financiamento Rápido</h3>
-                <p>Aprovação em até 24 horas com as melhores taxas</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-                <h3>Garantia Completa</h3>
-                <p>Assistência técnica e garantia em todos os veículos</p>
-            </div>
-        </div>
-    </div>
-</section>
+        {% endif %}
+    {% endwith %}
 
-<!-- Estatísticas -->
-<section class="stats">
-    <div class="container">
-        <h2 class="section-title">Números que falam por si</h2>
-        <div class="stats-grid">
-            <div class="stat-item">
-                <h3>1.500+</h3>
-                <p>Veículos Vendidos</p>
+    <main class="main-content">
+        <!-- Banner Hero -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Bem-vindo à Script Cars</h1>
+                <p class="hero-subtitle">Os melhores veículos com os melhores preços</p>
+                <div class="hero-buttons">
+                    <a href="{{ url_for('listar_veiculos_disponiveis') }}" class="btn btn-primary">Ver Veículos</a>
+                    <a href="{{ url_for('sobre') }}" class="btn btn-secondary">Sobre Nós</a>
+                </div>
             </div>
-            <div class="stat-item">
-                <h3>98%</h3>
-                <p>Clientes Satisfeitos</p>
+        </section>
+
+        <!-- Destaques -->
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">Por que escolher nossa concessionária?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <h3>Qualidade Garantida</h3>
+                        <p>Todos os veículos passam por rigorosa inspeção técnica</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <h3>Melhores Preços</h3>
+                        <p>Os melhores preços do mercado com condições especiais</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fa-solid fa-rocket"></i></div>
+                        <h3>Financiamento Rápido</h3>
+                        <p>Aprovação em até 24 horas com as melhores taxas</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                        <h3>Garantia Completa</h3>
+                        <p>Assistência técnica e garantia em todos os veículos</p>
+                    </div>
+                </div>
             </div>
-            <div class="stat-item">
-                <h3>15+</h3>
-                <p>Anos de Experiência</p>
+        </section>
+
+        <!-- Estatísticas -->
+        <section class="stats">
+            <div class="container">
+                <h2 class="section-title">Números que falam por si</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h3>1.500+</h3>
+                        <p>Veículos Vendidos</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>98%</h3>
+                        <p>Clientes Satisfeitos</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>15+</h3>
+                        <p>Anos de Experiência</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>100+</h3>
+                        <p>Veículos Disponívels</p>
+                    </div>
+                </div>
             </div>
-            <div class="stat-item">
-                <h3>100+</h3>
-                <p>Veículos Disponívels</p>
-            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Script Cars. Todos os direitos reservados.</p>
+            <p>Desenvolvido por <a class="footer-link" href="https://github.com/WanDall2104/ScriptCars.git" target="_blank"><img src="{{ url_for('static', filename='uploads/logo-scriptboys.png') }}" alt="Script Boys" class="logo-footer">Script Boys</a> para gestão de vendas automotivas</p>
         </div>
-    </div>
-</section>
-{% endblock %}
+    </footer>
+
+    <script defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.parentElement.classList.toggle('active');
+                });
+            });
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 300);
+                });
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

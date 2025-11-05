@@ -1,75 +1,153 @@
-{% extends "base.html" %}
-
-{% block title %}Nova Venda - Concessionária Premium{% endblock %}
-
-{% block content %}
-<section class="page-section">
-    <div class="container">
-        <div class="form-container">
-            <h1 class="page-title">Registrar Nova Venda</h1>
-            
-            <form method="POST" action="{{ url_for('venda.nova_venda') }}" class="form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="id_cliente">Cliente *</label>
-                        <select id="id_cliente" name="id_cliente" required>
-                            <option value="">Selecione um cliente</option>
-                            {% for cliente in clientes %}
-                                <option value="{{ cliente.id_cliente }}">{{ cliente.nome }} - {{ cliente.cpf }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="id_veiculo">Veículo *</label>
-                        <select id="id_veiculo" name="id_veiculo" required>
-                            <option value="">Selecione um veículo</option>
-                            {% for veiculo in veiculos %}
-                                <option value="{{ veiculo.id_veiculo }}">
-                                    {{ veiculo.marca }} {{ veiculo.modelo }} {{ veiculo.ano }} - R$ {{ "%.2f"|format(veiculo.preco) }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="valor_final">Valor Final (R$) *</label>
-                        <input type="number" id="valor_final" name="valor_final" required 
-                               step="0.01" min="0" 
-                               placeholder="Valor final da venda">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="forma_pagamento">Forma de Pagamento</label>
-                        <select id="forma_pagamento" name="forma_pagamento">
-                            <option value="">Selecione</option>
-                            <option value="À vista">À vista</option>
-                            <option value="Financiamento">Financiamento</option>
-                            <option value="Cartão de Crédito">Cartão de Crédito</option>
-                            <option value="Cartão de Débito">Cartão de Débito</option>
-                            <option value="Transferência">Transferência</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="observacoes">Observações</label>
-                    <textarea id="observacoes" name="observacoes" rows="4" 
-                              placeholder="Observações sobre a venda (opcional)"></textarea>
-                </div>
-                
-                <div class="info-box">
-                    <p><i class="fa-solid fa-lightbulb"></i> O veículo será automaticamente marcado como indisponível após o registro da venda.</p>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Registrar Venda</button>
-                    <a href="{{ url_for('venda.listar_vendas') }}" class="btn btn-secondary">Cancelar</a>
-                </div>
-            </form>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if venda %}Editar{% else %}Nova{% endif %} Venda - Concessionária Premium</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='uploads/logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='uploads/logo-nav.png') }}" alt="Script Cars" class="logo"></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+                <li><a href="{{ url_for('listar_veiculos_disponiveis') }}">Veículos</a></li>
+                {% if logged_in %}
+                    {% if user_tipo == 'funcionario' %}
+                        <li><a href="{{ url_for('listar_clientes') }}">Clientes</a></li>
+                        <li><a href="{{ url_for('listar_vendas') }}">Vendas</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('listar_veiculos') }}"><i class="fa-solid fa-warehouse"></i> Gerenciar Veículos</a></li>
+                                <li><a href="{{ url_for('listar_funcionarios') }}"><i class="fa-solid fa-users"></i> Funcionários</a></li>
+                                <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('perfil_cliente') }}"><i class="fa-solid fa-id-card"></i> Meu Perfil</a></li>
+                                <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                    <li><a href="{{ url_for('cadastro') }}" class="btn-cadastro"><i class="fa-solid fa-user-plus"></i> Cadastrar</a></li>
+                {% endif %}
+            </ul>
         </div>
-    </div>
-</section>
-{% endblock %}
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="main-content">
+        <section class="page-section">
+            <div class="container">
+                <div class="form-container">
+                    <h1 class="page-title">{% if venda %}Editar{% else %}Registrar Nova{% endif %} Venda</h1>
+                    
+                    <form method="POST" action="{% if venda %}{{ url_for('editar_venda', id=venda.id_venda) }}{% else %}{{ url_for('nova_venda') }}{% endif %}" class="form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="id_cliente">Cliente *</label>
+                                <select id="id_cliente" name="id_cliente" required>
+                                    <option value="">Selecione um cliente</option>
+                                    {% for cliente in clientes %}
+                                        <option value="{{ cliente.id_cliente }}" {% if venda and venda.id_cliente == cliente.id_cliente %}selected{% endif %}>
+                                            {{ cliente.nome }} - {{ cliente.cpf }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_veiculo">Veículo *</label>
+                                <select id="id_veiculo" name="id_veiculo" required>
+                                    <option value="">Selecione um veículo</option>
+                                    {% for veiculo in veiculos %}
+                                        <option value="{{ veiculo.id_veiculo }}" {% if venda and venda.id_veiculo == veiculo.id_veiculo %}selected{% endif %}>
+                                            {{ veiculo.marca }} {{ veiculo.modelo }} {{ veiculo.ano }} - R$ {{ "%.2f"|format(veiculo.preco) }}
+                                            {% if not veiculo.disponivel and not (venda and venda.id_veiculo == veiculo.id_veiculo) %}(Vendido){% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="valor_final">Valor Final (R$) *</label>
+                                <input type="number" id="valor_final" name="valor_final" required 
+                                       step="0.01" min="0" 
+                                       placeholder="Valor final da venda"
+                                       value="{{ venda.valor_final if venda else '' }}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="forma_pagamento">Forma de Pagamento</label>
+                                <select id="forma_pagamento" name="forma_pagamento">
+                                    <option value="">Selecione</option>
+                                    <option value="À vista" {% if venda and venda.forma_pagamento == 'À vista' %}selected{% endif %}>À vista</option>
+                                    <option value="Financiamento" {% if venda and venda.forma_pagamento == 'Financiamento' %}selected{% endif %}>Financiamento</option>
+                                    <option value="Cartão de Crédito" {% if venda and venda.forma_pagamento == 'Cartão de Crédito' %}selected{% endif %}>Cartão de Crédito</option>
+                                    <option value="Cartão de Débito" {% if venda and venda.forma_pagamento == 'Cartão de Débito' %}selected{% endif %}>Cartão de Débito</option>
+                                    <option value="Transferência" {% if venda and venda.forma_pagamento == 'Transferência' %}selected{% endif %}>Transferência</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="observacoes">Observações</label>
+                            <textarea id="observacoes" name="observacoes" rows="4" 
+                                      placeholder="Observações sobre a venda (opcional)">{{ venda.observacoes if venda and venda.observacoes else '' }}</textarea>
+                        </div>
+                        
+                        {% if not venda %}
+                        <div class="info-box">
+                            <p><i class="fa-solid fa-lightbulb"></i> O veículo será automaticamente marcado como indisponível após o registro da venda.</p>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">{% if venda %}Atualizar{% else %}Registrar{% endif %} Venda</button>
+                            <a href="{{ url_for('listar_vendas') }}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Script Cars. Todos os direitos reservados.</p>
+            <p>Desenvolvido por <a class="footer-link" href="https://github.com/WanDall2104/ScriptCars.git" target="_blank"><img src="{{ url_for('static', filename='uploads/logo-scriptboys.png') }}" alt="Script Boys" class="logo-footer">Script Boys</a> para gestão de vendas automotivas</p>
+        </div>
+    </footer>
+    <script>
+        document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.parentElement.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

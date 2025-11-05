@@ -76,11 +76,12 @@ Após executar o SQL, você pode fazer login com:
 ## 📁 Estrutura do Projeto
 
 ```
-projetofinalbackend/
+ScriptCars/
 ├── app.py                        # Arquivo principal da aplicação
 ├── config.py                     # Configuração do banco de dados
 ├── requirements.txt              # Dependências do projeto
 ├── SQL-Códigos-BD.txt            # Script de criação do banco de dados
+├── Projeto final.pdf             # Documentação do projeto
 ├── controllers/                  # Controllers (lógica de controle)
 │   ├── auth_controller.py        # Autenticação e login
 │   ├── cliente_controller.py     # CRUD de clientes
@@ -95,17 +96,21 @@ projetofinalbackend/
 │   └── venda_model.py            # Funções de acesso aos dados de vendas
 └── views/
     ├── templates/                # Templates (HTML)
-    │   ├── base.html             # Template base
     │   ├── home.html             # Página inicial (pública)
     │   ├── sobre.html            # Sobre a empresa (pública)
     │   ├── login.html            # Página de login
     │   ├── cadastro.html         # Página de cadastro
+    │   ├── perfil.html           # Perfil do usuário
     │   ├── veiculos_disponiveis.html # Veículos (pública)
     │   ├── clientes.html         # Lista de clientes
     │   ├── funcionarios.html     # Lista de funcionários
     │   ├── veiculos.html         # Lista de veículos
     │   ├── vendas.html           # Lista de vendas
-    │   └── form_*.html           # Formulários de CRUD
+    │   ├── detalhes_venda.html   # Detalhes da venda
+    │   ├── form_cliente.html     # Formulário de cliente
+    │   ├── form_funcionario.html # Formulário de funcionário
+    │   ├── form_veiculo.html     # Formulário de veículo
+    │   └── form_venda.html       # Formulário de venda
     └── static/                   # Arquivos estáticos
         ├── style.css             # Estilos CSS
         └── uploads/              # Fotos dos veículos
@@ -180,10 +185,10 @@ projetofinalbackend/
 Projeto desenvolvido como projeto final da disciplina de Backend Development.
 
 Membros da equipe:
-Caio Ribeiro de Oliveira
-Daniel Nogueira Machado
-Gabriel Wan Dall Parra
-Luiz Henrique Machado
+Caio Ribeiro de Oliveira,
+Daniel Nogueira Machado,
+Gabriel Wan Dall Parra,
+Luiz Henrique Machado.
 
 ---
 

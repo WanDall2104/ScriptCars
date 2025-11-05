@@ -1,8 +1,16 @@
-from config import get_db_connection
+from config import Config
+import mysql.connector
+
+def inicia_bd():
+    try:
+        return mysql.connector.connect(**Config.DB_CONFIG)
+    except mysql.connector.Error as err:
+        print(f"Erro de conexão com o BD: {err}")
+        return None
 
 def listar_veiculos():
     """Lista todos os veículos"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute("SELECT * FROM veiculos ORDER BY marca, modelo")
@@ -13,7 +21,7 @@ def listar_veiculos():
 
 def listar_veiculos_disponiveis():
     """Lista apenas veículos disponíveis"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute("SELECT * FROM veiculos WHERE disponivel=TRUE ORDER BY marca, modelo")
@@ -24,7 +32,7 @@ def listar_veiculos_disponiveis():
 
 def obter_veiculo(id_veiculo):
     """Obtém um veículo específico por ID"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute("SELECT * FROM veiculos WHERE id_veiculo = %s", (id_veiculo,))
@@ -55,7 +63,7 @@ def adicionar_veiculo(marca, modelo, ano, preco, foto=None, km_rodados=0, cor=No
     except ValueError:
         raise ValueError("Preço inválido")
     
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -92,7 +100,7 @@ def atualizar_veiculo(id_veiculo, marca, modelo, ano, preco, disponivel=None, km
     except ValueError:
         raise ValueError("Preço inválido")
     
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         # Monta a query dinamicamente baseado nos campos fornecidos
@@ -140,7 +148,7 @@ def atualizar_veiculo(id_veiculo, marca, modelo, ano, preco, disponivel=None, km
 
 def excluir_veiculo(id_veiculo):
     """Exclui um veículo"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         cursor.execute("DELETE FROM veiculos WHERE id_veiculo=%s", (id_veiculo,))
@@ -153,7 +161,7 @@ def excluir_veiculo(id_veiculo):
 
 def veiculo_tem_vendas(id_veiculo):
     """Verifica se veículo tem vendas associadas"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT COUNT(*) as total FROM vendas WHERE id_veiculo=%s", (id_veiculo,))

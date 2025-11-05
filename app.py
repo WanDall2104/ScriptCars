@@ -1,23 +1,20 @@
 from flask import Flask, render_template, session
-from controllers.auth_controller import auth_bp
-from controllers.funcionario_controller import funcionario_bp
-from controllers.cliente_controller import cliente_bp
-from controllers.veiculo_controller import veiculo_bp
-from controllers.venda_controller import venda_bp
+from config import Config
+from controllers import auth_controller, funcionario_controller, cliente_controller, veiculo_controller, venda_controller
 
 app = Flask(__name__, 
             template_folder='views/templates',
             static_folder='views/static')
-app.secret_key = 'chave_super_segura_para_sessao_2024'  # Chave secreta para sessões
-app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = 2592000  # 30 dias em segundos
 
-# Registro de Blueprints
-app.register_blueprint(auth_bp)
-app.register_blueprint(funcionario_bp)
-app.register_blueprint(cliente_bp)
-app.register_blueprint(veiculo_bp)
-app.register_blueprint(venda_bp)
+# Carrega as configurações
+app.config.from_object('config.Config')
+
+# Registro de rotas 
+auth_controller.configure_routes(app)
+funcionario_controller.configure_routes(app)
+cliente_controller.configure_routes(app)
+veiculo_controller.configure_routes(app)
+venda_controller.configure_routes(app)
 
 # ========== PÁGINAS PÚBLICAS ==========
 
@@ -71,7 +68,10 @@ def proteger_rotas_admin():
     
     if any(request.path.startswith(rota) for rota in rotas_admin):
         if 'user_id' not in session:
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('login'))
+        # Bloqueia clientes nas rotas administrativas
+        if session.get('user_tipo') != 'funcionario':
+            return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

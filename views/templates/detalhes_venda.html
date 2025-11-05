@@ -1,68 +1,140 @@
-{% extends "base.html" %}
-
-{% block title %}Detalhes da Venda - Concessionária Premium{% endblock %}
-
-{% block content %}
-<section class="page-section">
-    <div class="container">
-        <div class="details-container">
-            <div class="details-header">
-                <h1 class="page-title">Detalhes da Venda #{{ venda.id_venda }}</h1>
-                <a href="{{ url_for('venda.listar_vendas') }}" class="btn btn-secondary">← Voltar</a>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Venda - Concessionária Premium</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='uploads/logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='uploads/logo-nav.png') }}" alt="Script Cars" class="logo"></a>
             </div>
-            
-            <div class="details-grid">
-                <div class="detail-card">
-                    <h3>Informações da Venda</h3>
-                    <dl>
-                        <dt>Data da Venda:</dt>
-                        <dd>{{ venda.data_venda.strftime('%d/%m/%Y') if venda.data_venda else '-' }}</dd>
-                        
-                        <dt>Valor Final:</dt>
-                        <dd><strong>R$ {{ "%.2f"|format(venda.valor_final) }}</strong></dd>
-                        
-                        {% if venda.forma_pagamento %}
-                            <dt>Forma de Pagamento:</dt>
-                            <dd>{{ venda.forma_pagamento }}</dd>
-                        {% endif %}
-                        
-                        {% if venda.observacoes %}
-                            <dt>Observações:</dt>
-                            <dd>{{ venda.observacoes }}</dd>
-                        {% endif %}
-                    </dl>
-                </div>
-                
-                <div class="detail-card">
-                    <h3>Cliente</h3>
-                    <dl>
-                        <dt>Nome:</dt>
-                        <dd>{{ venda.nome_cliente }}</dd>
-                        
-                        {% if venda.cpf_cliente %}
-                            <dt>CPF:</dt>
-                            <dd>{{ venda.cpf_cliente }}</dd>
-                        {% endif %}
-                    </dl>
-                </div>
-                
-                <div class="detail-card">
-                    <h3>Vendedor</h3>
-                    <dl>
-                        <dt>Nome:</dt>
-                        <dd>{{ venda.nome_funcionario }}</dd>
-                    </dl>
-                </div>
-                
-                <div class="detail-card">
-                    <h3>Veículo</h3>
-                    <dl>
-                        <dt>Modelo:</dt>
-                        <dd>{{ venda.modelo_veiculo }}</dd>
-                    </dl>
-                </div>
-            </div>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+                <li><a href="{{ url_for('listar_veiculos_disponiveis') }}">Veículos</a></li>
+                {% if logged_in %}
+                    {% if user_tipo == 'funcionario' %}
+                        <li><a href="{{ url_for('listar_clientes') }}">Clientes</a></li>
+                        <li><a href="{{ url_for('listar_vendas') }}">Vendas</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('listar_veiculos') }}"><i class="fa-solid fa-warehouse"></i> Gerenciar Veículos</a></li>
+                                <li><a href="{{ url_for('listar_funcionarios') }}"><i class="fa-solid fa-users"></i> Funcionários</a></li>
+                                <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('perfil_cliente') }}"><i class="fa-solid fa-id-card"></i> Meu Perfil</a></li>
+                                <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                    <li><a href="{{ url_for('cadastro') }}" class="btn-cadastro"><i class="fa-solid fa-user-plus"></i> Cadastrar</a></li>
+                {% endif %}
+            </ul>
         </div>
-    </div>
-</section>
-{% endblock %}
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="main-content">
+        <section class="page-section">
+            <div class="container">
+                <div class="details-container">
+                    <div class="details-header">
+                        <h1 class="page-title">Detalhes da Venda #{{ venda.id_venda }}</h1>
+                        <a href="{{ url_for('listar_vendas') }}" class="btn btn-secondary">← Voltar</a>
+                    </div>
+                    
+                    <div class="details-grid">
+                        <div class="detail-card">
+                            <h3>Informações da Venda</h3>
+                            <dl>
+                                <dt>Data da Venda:</dt>
+                                <dd>{{ venda.data_venda.strftime('%d/%m/%Y') if venda.data_venda else '-' }}</dd>
+                                
+                                <dt>Valor Final:</dt>
+                                <dd><strong>R$ {{ "%.2f"|format(venda.valor_final) }}</strong></dd>
+                                
+                                {% if venda.forma_pagamento %}
+                                    <dt>Forma de Pagamento:</dt>
+                                    <dd>{{ venda.forma_pagamento }}</dd>
+                                {% endif %}
+                                
+                                {% if venda.observacoes %}
+                                    <dt>Observações:</dt>
+                                    <dd>{{ venda.observacoes }}</dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3>Cliente</h3>
+                            <dl>
+                                <dt>Nome:</dt>
+                                <dd>{{ venda.nome_cliente }}</dd>
+                                
+                                {% if venda.cpf_cliente %}
+                                    <dt>CPF:</dt>
+                                    <dd>{{ venda.cpf_cliente }}</dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3>Vendedor</h3>
+                            <dl>
+                                <dt>Nome:</dt>
+                                <dd>{{ venda.nome_funcionario }}</dd>
+                            </dl>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3>Veículo</h3>
+                            <dl>
+                                <dt>Modelo:</dt>
+                                <dd>{{ venda.modelo_veiculo }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Script Cars. Todos os direitos reservados.</p>
+            <p>Desenvolvido por <a class="footer-link" href="https://github.com/WanDall2104/ScriptCars.git" target="_blank"><img src="{{ url_for('static', filename='uploads/logo-scriptboys.png') }}" alt="Script Boys" class="logo-footer">Script Boys</a> para gestão de vendas automotivas</p>
+        </div>
+    </footer>
+    <script>
+        document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.parentElement.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

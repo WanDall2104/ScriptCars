@@ -1,59 +1,98 @@
-{% extends "base.html" %}
-
-{% block title %}{% if funcionario %}Editar{% else %}Novo{% endif %} Funcionário - Concessionária Premium{% endblock %}
-
-{% block content %}
-<section class="page-section">
-    <div class="container">
-        <div class="form-container">
-            <h1 class="page-title">{% if funcionario %}Editar{% else %}Novo{% endif %} Funcionário</h1>
-            
-            <form method="POST" action="{% if funcionario %}{{ url_for('funcionario.editar_funcionario', id=funcionario.id_funcionario) }}{% else %}{{ url_for('funcionario.novo_funcionario') }}{% endif %}" class="form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="nome">Nome Completo *</label>
-                        <input type="text" id="nome" name="nome" required 
-                               value="{{ funcionario.nome if funcionario else '' }}" 
-                               placeholder="Nome completo">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email *</label>
-                        <input type="email" id="email" name="email" required 
-                               value="{{ funcionario.email if funcionario else '' }}" 
-                               placeholder="funcionario@email.com">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="cargo">Cargo *</label>
-                        <input type="text" id="cargo" name="cargo" required 
-                               value="{{ funcionario.cargo if funcionario else '' }}" 
-                               placeholder="Ex: Vendedor, Gerente">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="senha">Senha {% if funcionario %}(deixe em branco para não alterar){% else %}*{% endif %}</label>
-                    <input type="password" id="senha" name="senha" {% if not funcionario %}required{% endif %} 
-                           placeholder="Mínimo 6 caracteres">
-                </div>
-                
-                {% if funcionario %}
-                    <div class="info-box">
-                        <p><i class="fa-solid fa-lightbulb"></i> Deixe o campo senha em branco se não quiser alterá-la.</p>
-                    </div>
-                {% endif %}
-                
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        {% if funcionario %}Atualizar{% else %}Cadastrar{% endif %}
-                    </button>
-                    <a href="{{ url_for('funcionario.listar_funcionarios') }}" class="btn btn-secondary">Cancelar</a>
-                </div>
-            </form>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if funcionario %}Editar{% else %}Novo{% endif %} Funcionário - Concessionária Premium</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='uploads/logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='uploads/logo-nav.png') }}" alt="Script Cars" class="logo"></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+                <li><a href="{{ url_for('listar_veiculos_disponiveis') }}">Veículos</a></li>
+            </ul>
         </div>
-    </div>
-</section>
-{% endblock %}
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="main-content">
+        <section class="page-section">
+            <div class="container">
+                <div class="form-container">
+                    <h1 class="page-title">{% if funcionario %}Editar{% else %}Novo{% endif %} Funcionário</h1>
+                    
+                    <form method="POST" action="{% if funcionario %}{{ url_for('editar_funcionario', id=funcionario.id_funcionario) }}{% else %}{{ url_for('novo_funcionario') }}{% endif %}" class="form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nome">Nome Completo *</label>
+                                <input type="text" id="nome" name="nome" required 
+                                       value="{{ funcionario.nome if funcionario else '' }}" 
+                                       placeholder="Nome completo">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" name="email" required 
+                                       value="{{ funcionario.email if funcionario else '' }}" 
+                                       placeholder="funcionario@email.com">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cargo">Cargo *</label>
+                                <input type="text" id="cargo" name="cargo" required 
+                                       value="{{ funcionario.cargo if funcionario else '' }}" 
+                                       placeholder="Ex: Vendedor, Gerente">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="senha">Senha {% if funcionario %}(deixe em branco para não alterar){% else %}*{% endif %}</label>
+                            <input type="password" id="senha" name="senha" {% if not funcionario %}required{% endif %} 
+                                   placeholder="Mínimo 6 caracteres">
+                        </div>
+                        
+                        {% if funcionario %}
+                            <div class="info-box">
+                                <p><i class="fa-solid fa-lightbulb"></i> Deixe o campo senha em branco se não quiser alterá-la.</p>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                {% if funcionario %}Atualizar{% else %}Cadastrar{% endif %}
+                            </button>
+                            <a href="{{ url_for('listar_funcionarios') }}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Script Cars. Todos os direitos reservados.</p>
+            <p>Desenvolvido por <a class="footer-link" href="https://github.com/WanDall2104/ScriptCars.git" target="_blank"><img src="{{ url_for('static', filename='uploads/logo-scriptboys.png') }}" alt="Script Boys" class="logo-footer">Script Boys</a> para gestão de vendas automotivas</p>
+        </div>
+    </footer>
+</body>
+</html>

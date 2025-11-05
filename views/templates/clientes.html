@@ -1,61 +1,137 @@
-{% extends "base.html" %}
-
-{% block title %}Clientes - Concessionária Premium{% endblock %}
-
-{% block content %}
-<section class="page-section">
-    <div class="container">
-        <div class="page-header">
-            <h1 class="page-title">Gerenciar Clientess</h1>
-            <a href="{{ url_for('cliente.formulario_novo_cliente') }}" class="btn btn-primary">
-                + Novo Cliente
-            </a>
-        </div>
-        
-        {% if clientes %}
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                            <th>CPF</th>
-                            <th>Telefone</th>
-                            <th>Email</th>
-                            <th>Endereço</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for cliente in clientes %}
-                            <tr>
-                                <td>{{ cliente.id_cliente }}</td>
-                                <td>{{ cliente.nome }}</td>
-                                <td>{{ cliente.cpf }}</td>
-                                <td>{{ cliente.telefone or '-' }}</td>
-                                <td>{{ cliente.email or '-' }}</td>
-                                <td>{{ cliente.endereco or '-' }}</td>
-                                <td class="actions">
-                                    <a href="{{ url_for('cliente.formulario_editar_cliente', id=cliente.id_cliente) }}" class="btn-icon" title="Editar">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </a>
-                                    <a href="{{ url_for('cliente.excluir_cliente', id=cliente.id_cliente) }}" 
-                                       class="btn-icon btn-delete" title="Excluir"
-                                       onclick="return confirm('Deseja realmente excluir este cliente?')">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes - Concessionária Premium</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='uploads/logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='uploads/logo-nav.png') }}" alt="Script Cars" class="logo"></a>
             </div>
-        {% else %}
-            <div class="empty-state">
-                <p>Nenhum cliente cadastrado ainda.</p>
-                <a href="{{ url_for('cliente.formulario_novo_cliente') }}" class="btn btn-primary">Cadastrar Primeiro Cliente</a>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+                <li><a href="{{ url_for('listar_veiculos_disponiveis') }}">Veículos</a></li>
+                {% if logged_in %}
+                    {% if user_tipo == 'funcionario' %}
+                        <li><a href="{{ url_for('listar_clientes') }}">Clientes</a></li>
+                        <li><a href="{{ url_for('listar_vendas') }}">Vendas</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('listar_veiculos') }}"><i class="fa-solid fa-warehouse"></i> Gerenciar Veículos</a></li>
+                                <li><a href="{{ url_for('listar_funcionarios') }}"><i class="fa-solid fa-users"></i> Funcionários</a></li>
+                                <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('perfil_cliente') }}"><i class="fa-solid fa-id-card"></i> Meu Perfil</a></li>
+                                <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                    <li><a href="{{ url_for('cadastro') }}" class="btn-cadastro"><i class="fa-solid fa-user-plus"></i> Cadastrar</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
             </div>
         {% endif %}
-    </div>
-</section>
-{% endblock %}
+    {% endwith %}
+
+    <main class="main-content">
+        <section class="page-section">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Gerenciar Clientes</h1>
+                    {% if logged_in and user_tipo == 'funcionario' %}
+                        <a href="{{ url_for('formulario_novo_cliente') }}" class="btn btn-primary">
+                            + Novo Cliente
+                        </a>
+                    {% endif %}
+                </div>
+                
+                {% if clientes %}
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>CPF</th>
+                                    <th>Telefone</th>
+                                    <th>Email</th>
+                                    <th>Endereço</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cliente in clientes %}
+                                    <tr>
+                                        <td>{{ cliente.id_cliente }}</td>
+                                        <td>{{ cliente.nome }}</td>
+                                        <td>{{ cliente.cpf }}</td>
+                                        <td>{{ cliente.telefone or '-' }}</td>
+                                        <td>{{ cliente.email or '-' }}</td>
+                                        <td>{{ cliente.endereco or '-' }}</td>
+                                        <td class="actions">
+                                            <a href="{{ url_for('formulario_editar_cliente', id=cliente.id_cliente) }}" class="btn-icon" title="Editar">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
+                                            <a href="{{ url_for('excluir_cliente', id=cliente.id_cliente) }}" 
+                                               class="btn-icon btn-delete" title="Excluir"
+                                               onclick="return confirm('Deseja realmente excluir este cliente?')">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <p>Nenhum cliente cadastrado ainda.</p>
+                        {% if logged_in and user_tipo == 'funcionario' %}
+                            <a href="{{ url_for('formulario_novo_cliente') }}" class="btn btn-primary">Cadastrar Primeiro Cliente</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Script Cars. Todos os direitos reservados.</p>
+            <p>Desenvolvido por <a class="footer-link" href="https://github.com/WanDall2104/ScriptCars.git" target="_blank"><img src="{{ url_for('static', filename='uploads/logo-scriptboys.png') }}" alt="Script Boys" class="logo-footer">Script Boys</a> para gestão de vendas automotivas</p>
+        </div>
+    </footer>
+    <script>
+        document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.parentElement.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

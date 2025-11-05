@@ -1,63 +1,135 @@
-{% extends "base.html" %}
-
-{% block title %}Sobre Nós - Concessionária Premium{% endblock %}
-
-{% block content %}
-<section class="about-section">
-    <div class="container">
-        <div class="about-content">
-            <h1 class="page-title">Sobre a Script Cars</h1>
-            
-            <div class="about-text">
-                <p>Com mais de <strong>15 anos de experiência</strong> no mercado automotivo, a Script Cars é referência em qualidade, confiança e excelência no atendimento.</p>
-                
-                <p>Nossa missão é oferecer os melhores veículos, com o melhor atendimento e as melhores condições de pagamento para nossos clientes.</p>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nós - Concessionária Premium</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='uploads/logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='uploads/logo-nav.png') }}" alt="Script Cars" class="logo"></a>
             </div>
-
-            <div class="about-highlights">
-                <div class="highlight">
-                    <h3><i class="fa-solid fa-bullseye"></i> Nossa Missão</h3>
-                    <p>Proporcionar a melhor experiência na compra de veículos, oferecendo produtos de qualidade, atendimento diferenciado e condições que cabem no seu bolso.</p>
-                </div>
-                
-                <div class="highlight">
-                    <h3><i class="fa-solid fa-gem"></i> Nossos Valores</h3>
-                    <ul>
-                        <li>Transparência em todas as negociações</li>
-                        <li>Compromisso com a satisfação do cliente</li>
-                        <li>Ética e responsabilidade em todas as ações</li>
-                        <li>Inovação constante em produtos e serviços</li>
-                    </ul>
-                </div>
-
-                <div class="highlight">
-                    <h3><i class="fa-solid fa-trophy"></i> Nossa Visão</h3>
-                    <p>Ser a concessionária mais reconhecida e confiável da região, referência em qualidade, preço justo e excelência no atendimento.</p>
-                </div>
-            </div>
-
-            <div class="contact-info">
-                <h2>Entre em Contato</h2>
-                <div class="contact-grid">
-                    <div class="contact-item">
-                        <strong><i class="fa-solid fa-phone"></i> Telefone:</strong>
-                        <p>(41) 99999-9999</p>
-                    </div>
-                    <div class="contact-item">
-                        <strong><i class="fa-solid fa-envelope"></i> Email:</strong>
-                        <p>contato@scriptcars.com.br</p>
-                    </div>
-                    <div class="contact-item">
-                        <strong><i class="fa-solid fa-location-dot"></i> Endereço:</strong>
-                        <p>Av. Automóvel, 1234 - Centro - Curitiba/PR</p>
-                    </div>
-                    <div class="contact-item">
-                        <strong><i class="fa-regular fa-clock"></i> Horário:</strong>
-                        <p>Segunda a Sexta: 8h às 18h<br>Sábado: 8h às 13h</p>
-                    </div>
-                </div>
-            </div>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+                <li><a href="{{ url_for('listar_veiculos_disponiveis') }}">Veículos</a></li>
+                {% if logged_in %}
+                    {% if user_tipo == 'funcionario' %}
+                        <li><a href="{{ url_for('listar_clientes') }}">Clientes</a></li>
+                        <li><a href="{{ url_for('listar_vendas') }}">Vendas</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('listar_veiculos') }}"><i class="fa-solid fa-warehouse"></i> Gerenciar Veículos</a></li>
+                                <li><a href="{{ url_for('listar_funcionarios') }}"><i class="fa-solid fa-users"></i> Funcionários</a></li>
+                                <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fa-solid fa-user"></i> {{ user_nome }} <i class="fa-solid fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('perfil_cliente') }}"><i class="fa-solid fa-id-card"></i> Meu Perfil</a></li>
+                                <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                    <li><a href="{{ url_for('cadastro') }}" class="btn-cadastro"><i class="fa-solid fa-user-plus"></i> Cadastrar</a></li>
+                {% endif %}
+            </ul>
         </div>
-    </div>
-</section>
-{% endblock %}
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="main-content">
+        <section class="about-section">
+            <div class="container">
+                <div class="about-content">
+                    <h1 class="page-title">Sobre a Script Cars</h1>
+                    
+                    <div class="about-text">
+                        <p>Com mais de <strong>15 anos de experiência</strong> no mercado automotivo, a Script Cars é referência em qualidade, confiança e excelência no atendimento.</p>
+                        
+                        <p>Nossa missão é oferecer os melhores veículos, com o melhor atendimento e as melhores condições de pagamento para nossos clientes.</p>
+                    </div>
+
+                    <div class="about-highlights">
+                        <div class="highlight">
+                            <h3><i class="fa-solid fa-bullseye"></i> Nossa Missão</h3>
+                            <p>Proporcionar a melhor experiência na compra de veículos, oferecendo produtos de qualidade, atendimento diferenciado e condições que cabem no seu bolso.</p>
+                        </div>
+                        
+                        <div class="highlight">
+                            <h3><i class="fa-solid fa-gem"></i> Nossos Valores</h3>
+                            <ul>
+                                <li>Transparência em todas as negociações</li>
+                                <li>Compromisso com a satisfação do cliente</li>
+                                <li>Ética e responsabilidade em todas as ações</li>
+                                <li>Inovação constante em produtos e serviços</li>
+                            </ul>
+                        </div>
+
+                        <div class="highlight">
+                            <h3><i class="fa-solid fa-trophy"></i> Nossa Visão</h3>
+                            <p>Ser a concessionária mais reconhecida e confiável da região, referência em qualidade, preço justo e excelência no atendimento.</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-info">
+                        <h2>Entre em Contato</h2>
+                        <div class="contact-grid">
+                            <div class="contact-item">
+                                <strong><i class="fa-solid fa-phone"></i> Telefone:</strong>
+                                <p>(41) 99999-9999</p>
+                            </div>
+                            <div class="contact-item">
+                                <strong><i class="fa-solid fa-envelope"></i> Email:</strong>
+                                <p>contato@scriptcars.com.br</p>
+                            </div>
+                            <div class="contact-item">
+                                <strong><i class="fa-solid fa-location-dot"></i> Endereço:</strong>
+                                <p>Av. Automóvel, 1234 - Centro - Curitiba/PR</p>
+                            </div>
+                            <div class="contact-item">
+                                <strong><i class="fa-regular fa-clock"></i> Horário:</strong>
+                                <p>Segunda a Sexta: 8h às 18h<br>Sábado: 8h às 13h</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Script Cars. Todos os direitos reservados.</p>
+            <p>Desenvolvido por <a class="footer-link" href="https://github.com/WanDall2104/ScriptCars.git" target="_blank"><img src="{{ url_for('static', filename='uploads/logo-scriptboys.png') }}" alt="Script Boys" class="logo-footer">Script Boys</a> para gestão de vendas automotivas</p>
+        </div>
+    </footer>
+    <script>
+        document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.parentElement.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

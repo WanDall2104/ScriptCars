@@ -1,9 +1,17 @@
-from config import get_db_connection
+from config import Config
+import mysql.connector
 import bcrypt
+
+def inicia_bd():
+    try:
+        return mysql.connector.connect(**Config.DB_CONFIG)
+    except mysql.connector.Error as err:
+        print(f"Erro de conexão com o BD: {err}")
+        return None
 
 def listar_funcionarios():
     """Lista todos os funcionários"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute("SELECT id_funcionario, nome, email, cargo, data_admissao FROM funcionarios ORDER BY nome")
@@ -14,7 +22,7 @@ def listar_funcionarios():
 
 def obter_funcionario(id_funcionario):
     """Obtém um funcionário específico por ID"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute("SELECT * FROM funcionarios WHERE id_funcionario = %s", (id_funcionario,))
@@ -25,7 +33,7 @@ def obter_funcionario(id_funcionario):
 
 def obter_funcionario_por_email(email):
     """Obtém funcionário por email para login"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute("SELECT * FROM funcionarios WHERE email = %s", (email,))
@@ -51,7 +59,7 @@ def adicionar_funcionario(nome, email, senha, cargo):
     # Hash da senha
     senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
     
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -72,7 +80,7 @@ def atualizar_funcionario(id_funcionario, nome, email, cargo, senha=None):
     if not nome or not email or not cargo:
         raise ValueError("Todos os campos são obrigatórios")
     
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         if senha:
@@ -98,7 +106,7 @@ def atualizar_funcionario(id_funcionario, nome, email, cargo, senha=None):
 
 def excluir_funcionario(id_funcionario):
     """Exclui um funcionário"""
-    conn = get_db_connection()
+    conn = inicia_bd()
     cursor = conn.cursor()
     try:
         cursor.execute("DELETE FROM funcionarios WHERE id_funcionario = %s", (id_funcionario,))
@@ -106,5 +114,16 @@ def excluir_funcionario(id_funcionario):
     except Exception as e:
         conn.rollback()
         raise e
+    finally:
+        conn.close()
+
+def funcionario_tem_vendas(id_funcionario: int) -> bool:
+    """Retorna True se o funcionário possui vendas vinculadas."""
+    conn = inicia_bd()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT COUNT(*) FROM vendas WHERE id_funcionario=%s", (id_funcionario,))
+        total = cursor.fetchone()[0]
+        return total > 0
     finally:
         conn.close()
