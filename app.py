@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session
+from flask import Flask, render_template, session, request, url_for, redirect
 from config import Config
 from controllers import auth_controller, funcionario_controller, cliente_controller, veiculo_controller, venda_controller
 
@@ -25,7 +25,7 @@ def moeda_brl(valor):
     try:
         numero = float(valor) if valor is not None else 0.0
         # Usa separador de milhar com vírgula, depois troca pontuação para padrão BR
-        formatado = f"{numero:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+        formatado = f"{numero:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.') # OLHAR EXEMPLO PROFESSOR
         return f"R$ {formatado}"
     except Exception:
         return f"R$ {valor}"
@@ -63,9 +63,7 @@ def injetar_usuario():
 @app.before_request
 def proteger_rotas_admin():
     """Verifica se rotas administrativas estão protegidas"""
-    from flask import request, redirect, url_for, session
     rotas_admin = ['/funcionarios', '/clientes', '/vendas']
-    
     if any(request.path.startswith(rota) for rota in rotas_admin):
         if 'user_id' not in session:
             return redirect(url_for('login'))
@@ -74,4 +72,4 @@ def proteger_rotas_admin():
             return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True)
