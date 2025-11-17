@@ -1,12 +1,4 @@
-from config import Config
-import mysql.connector
-
-def inicia_bd():
-    try:
-        return mysql.connector.connect(**Config.DB_CONFIG)
-    except mysql.connector.Error as err:
-        print(f"Erro de conexão com o BD: {err}")
-        return None
+from config import inicia_bd
 
 def listar_veiculos():
     """Lista todos os veículos"""
