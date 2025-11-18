@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS veiculos (
     id_veiculo INT AUTO_INCREMENT PRIMARY KEY,
     marca VARCHAR(50) NOT NULL,
     modelo VARCHAR(50) NOT NULL,
-    ano INT NOT NULL,
+    ano YEAR NOT NULL,
     preco DECIMAL(10,2) NOT NULL,
     disponivel BOOLEAN DEFAULT TRUE,
     foto VARCHAR(255),

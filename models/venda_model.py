@@ -1,4 +1,6 @@
 from config import inicia_bd
+from config import Config
+
 
 def listar_vendas():
     """Lista todas as vendas com informações relacionadas"""

@@ -1,5 +1,7 @@
 import bcrypt
+from config import Config
 from config import inicia_bd
+
 
 def listar_funcionarios():
     """Lista todos os funcionários"""

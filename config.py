@@ -1,12 +1,6 @@
 import mysql.connector
-
-def inicia_bd():
-    """Inicia conexão com o banco de dados"""
-    try:
-        return mysql.connector.connect(**Config.DB_CONFIG)
-    except mysql.connector.Error as err:
-        print(f"Erro de conexão com o BD: {err}")
-        return None
+import os
+from datetime import datetime
 
 class Config:
     # Chave de sessão e credenciais do banco no mesmo padrão das aulas
@@ -21,6 +15,13 @@ class Config:
     SESSION_PERMANENT = True
     PERMANENT_SESSION_LIFETIME = 2592000  # 30 dias em segundos
 
-def get_db_connection():
-    # Mantido por compatibilidade, usando Config.DB_CONFIG
-    return mysql.connector.connect(**Config.DB_CONFIG)
+    def get_db_connection():
+        # Mantido por compatibilidade, usando Config.DB_CONFIG
+        import mysql.connector
+        try:
+            connection = mysql.connector.connect(**Config.DB_CONFIG)
+            return connection
+        except mysql.connector.Error as err:
+            print(f"Erro ao se conectar com o banco de dados: {err}")
+            return None
+    

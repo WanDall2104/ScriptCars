@@ -1,16 +1,30 @@
 import bcrypt
+from config import Config
 from config import inicia_bd
 
+
+# FUNÇÃO CORRETA PARA PROFESSOR
 def listar_clientes():
     """Lista todos os clientes"""
-    conn = inicia_bd()
-    cursor = conn.cursor(dictionary=True)
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
+    
     try:
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM clientes ORDER BY nome")
         clientes = cursor.fetchall()
-        return clientes
-    finally:
+        cursor.close()
         conn.close()
+
+        return clientes
+    except Exception as e:
+        print(f"Erro ao buscar clientes: {e}")
+        if conn:
+            conn.close()
+        return []
+    
+        
 
 def obter_cliente(id_cliente):
     """Obtém um cliente específico por ID"""

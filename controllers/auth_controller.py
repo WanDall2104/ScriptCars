@@ -2,6 +2,7 @@ from flask import render_template, request, redirect, url_for, flash, session, m
 from models import funcionario_model, cliente_model
 from datetime import timedelta
 import mysql.connector
+from config import Config
 
 
 def configure_routes(app):

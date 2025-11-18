@@ -1,4 +1,6 @@
+from config import Config
 from config import inicia_bd
+
 
 def listar_veiculos():
     """Lista todos os veículos"""
