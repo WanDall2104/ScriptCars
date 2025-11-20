@@ -1,12 +1,13 @@
-from config import inicia_bd
 from config import Config
-
 
 def listar_vendas():
     """Lista todas as vendas com informações relacionadas"""
-    conn = inicia_bd()
-    cursor = conn.cursor(dictionary=True)
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
+    
     try:
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             SELECT v.id_venda, v.data_venda, v.valor_final, v.forma_pagamento, v.observacoes,
                    c.nome AS nome_cliente, c.cpf AS cpf_cliente,
@@ -19,15 +20,23 @@ def listar_vendas():
             ORDER BY v.data_venda DESC
         """)
         vendas = cursor.fetchall()
-        return vendas
-    finally:
+        cursor.close()
         conn.close()
+        return vendas
+    
+    except Exception as e:
+        print(f"Erro ao listar vendas: {e}")
+        if conn:
+            conn.close()
+        return []
 
 def obter_venda(id_venda):
     """Obtém uma venda específica por ID"""
-    conn = inicia_bd()
-    cursor = conn.cursor(dictionary=True)
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     try:
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             SELECT v.*, c.nome AS nome_cliente, ve.modelo AS modelo_veiculo, f.nome AS nome_funcionario
             FROM vendas v
@@ -37,9 +46,15 @@ def obter_venda(id_venda):
             WHERE v.id_venda = %s
         """, (id_venda,))
         venda = cursor.fetchone()
-        return venda
-    finally:
+        cursor.close()
         conn.close()
+        return venda
+    
+    except Exception as e:
+        print(f"Erro ao obter venda: {e}")
+        if conn:
+            conn.close()
+        return None
 
 def adicionar_venda(id_cliente, id_veiculo, id_funcionario, valor_final, forma_pagamento=None, observacoes=None):
     """Adiciona uma nova venda e marca o veículo como indisponível"""
@@ -55,7 +70,9 @@ def adicionar_venda(id_cliente, id_veiculo, id_funcionario, valor_final, forma_p
     except ValueError:
         raise ValueError("Valor inválido")
     
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         # Verifica se veículo está disponível
@@ -79,6 +96,7 @@ def adicionar_venda(id_cliente, id_veiculo, id_funcionario, valor_final, forma_p
         conn.rollback()
         raise e
     finally:
+        cursor.close()
         conn.close()
 
 def atualizar_venda(id_venda, id_cliente, id_veiculo, id_funcionario, valor_final, forma_pagamento=None, observacoes=None):
@@ -95,7 +113,9 @@ def atualizar_venda(id_venda, id_cliente, id_veiculo, id_funcionario, valor_fina
     except ValueError:
         raise ValueError("Valor inválido")
     
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         # Obtém o veículo atual da venda
@@ -135,11 +155,14 @@ def atualizar_venda(id_venda, id_cliente, id_veiculo, id_funcionario, valor_fina
         conn.rollback()
         raise e
     finally:
+        cursor.close()
         conn.close()
 
 def excluir_venda(id_venda):
     """Exclui uma venda e marca o veículo como disponível novamente"""
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         # Obtém o ID do veículo antes de excluir
@@ -158,11 +181,14 @@ def excluir_venda(id_venda):
         conn.rollback()
         raise e
     finally:
+        cursor.close()
         conn.close()
 
 def obter_relatorio_vendas(data_inicio=None, data_fim=None):
     """Gera relatório de vendas no período especificado"""
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor(dictionary=True)
     try:
         if data_inicio and data_fim:
@@ -184,6 +210,12 @@ def obter_relatorio_vendas(data_inicio=None, data_fim=None):
             """)
         
         relatorio = cursor.fetchone()
-        return relatorio
-    finally:
+        cursor.close()
         conn.close()
+        return relatorio
+    
+    except Exception as e:
+        print(f"Erro ao obter relatório de vendas: {e}")
+        if conn:
+            conn.close()
+        return None

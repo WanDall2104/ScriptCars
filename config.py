@@ -8,7 +8,7 @@ class Config:
     DB_CONFIG = {
         'host': 'localhost',
         'user': 'root',
-        'password': 'root',
+        'password': 'admin',
         'database': 'concessionaria'
     }
     # Opções de sessão (equivalente ao que estava em app.py)

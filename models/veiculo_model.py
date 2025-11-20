@@ -1,39 +1,63 @@
 from config import Config
-from config import inicia_bd
-
 
 def listar_veiculos():
     """Lista todos os veículos"""
-    conn = inicia_bd()
-    cursor = conn.cursor(dictionary=True)
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
+    
     try:
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM veiculos ORDER BY marca, modelo")
         veiculos = cursor.fetchall()
-        return veiculos
-    finally:
+        cursor.close()
         conn.close()
+        return veiculos
+    
+    except Exception as e:
+        print(f"Erro ao listar veículos: {e}")
+        if conn:
+            conn.close()
+        return []
 
 def listar_veiculos_disponiveis():
     """Lista apenas veículos disponíveis"""
-    conn = inicia_bd()
-    cursor = conn.cursor(dictionary=True)
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
+    
     try:
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM veiculos WHERE disponivel=TRUE ORDER BY marca, modelo")
         veiculos = cursor.fetchall()
-        return veiculos
-    finally:
+        cursor.close()
         conn.close()
+        return veiculos
+    
+    except Exception as e:
+        print(f"Erro ao listar veículos disponíveis: {e}")
+        if conn:
+            conn.close()
+        return []
 
 def obter_veiculo(id_veiculo):
     """Obtém um veículo específico por ID"""
-    conn = inicia_bd()
-    cursor = conn.cursor(dictionary=True)
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     try:
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM veiculos WHERE id_veiculo = %s", (id_veiculo,))
         veiculo = cursor.fetchone()
-        return veiculo
-    finally:
+        cursor.close()
         conn.close()
+        return veiculo
+    
+    except Exception as e:
+        print(f"Erro ao obter veículo: {e}")
+        if conn:
+            conn.close()
+        return None
 
 def adicionar_veiculo(marca, modelo, ano, preco, foto=None, km_rodados=0, cor=None, combustivel=None):
     """Adiciona um novo veículo"""
@@ -57,7 +81,9 @@ def adicionar_veiculo(marca, modelo, ano, preco, foto=None, km_rodados=0, cor=No
     except ValueError:
         raise ValueError("Preço inválido")
     
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -70,6 +96,7 @@ def adicionar_veiculo(marca, modelo, ano, preco, foto=None, km_rodados=0, cor=No
         conn.rollback()
         raise e
     finally:
+        cursor.close()
         conn.close()
 
 def atualizar_veiculo(id_veiculo, marca, modelo, ano, preco, disponivel=None, km_rodados=None, cor=None, combustivel=None, foto=None):
@@ -94,7 +121,9 @@ def atualizar_veiculo(id_veiculo, marca, modelo, ano, preco, disponivel=None, km
     except ValueError:
         raise ValueError("Preço inválido")
     
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         # Monta a query dinamicamente baseado nos campos fornecidos
@@ -138,11 +167,14 @@ def atualizar_veiculo(id_veiculo, marca, modelo, ano, preco, disponivel=None, km
         conn.rollback()
         raise e
     finally:
+        cursor.close()
         conn.close()
 
 def excluir_veiculo(id_veiculo):
     """Exclui um veículo"""
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         cursor.execute("DELETE FROM veiculos WHERE id_veiculo=%s", (id_veiculo,))
@@ -151,15 +183,22 @@ def excluir_veiculo(id_veiculo):
         conn.rollback()
         raise e
     finally:
+        cursor.close()
         conn.close()
 
 def veiculo_tem_vendas(id_veiculo):
     """Verifica se veículo tem vendas associadas"""
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return False
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT COUNT(*) as total FROM vendas WHERE id_veiculo=%s", (id_veiculo,))
         result = cursor.fetchone()
         return result[0] > 0
+    except Exception as e:
+        print(f"Erro ao verificar vendas do veículo: {e}")
+        return False
     finally:
+        cursor.close()
         conn.close()

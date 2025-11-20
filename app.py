@@ -18,7 +18,7 @@ venda_controller.configure_routes(app)
 
 # ========== PÁGINAS PÚBLICAS ==========
 
-# Filtro de formatação monetária BRL para templates Jinja
+# Filtro de formatação monetária BRL 
 @app.template_filter('moeda_brl')
 def moeda_brl(valor):
     """Formata número no padrão monetário brasileiro, ex: 12345.6 -> R$ 12.345,60"""

@@ -1,40 +1,63 @@
 import bcrypt
 from config import Config
-from config import inicia_bd
-
 
 def listar_funcionarios():
     """Lista todos os funcionários"""
-    conn = inicia_bd()
-    cursor = conn.cursor(dictionary=True)
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
+    
     try:
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT id_funcionario, nome, email, cargo, data_admissao FROM funcionarios ORDER BY nome")
         funcionarios = cursor.fetchall()
-        return funcionarios
-    finally:
+        cursor.close()
         conn.close()
+        return funcionarios
+    
+    except Exception as e:
+        print(f"Erro ao listar funcionários: {e}")
+        if conn:
+            conn.close()
+        return []
 
 def obter_funcionario(id_funcionario):
     """Obtém um funcionário específico por ID"""
-    conn = inicia_bd()
-    cursor = conn.cursor(dictionary=True)
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     try:
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM funcionarios WHERE id_funcionario = %s", (id_funcionario,))
         funcionario = cursor.fetchone()
-        return funcionario
-    finally:
+        cursor.close()
         conn.close()
+        return funcionario
+    
+    except Exception as e:
+        print(f"Erro ao obter funcionário: {e}")
+        if conn:
+            conn.close()
+        return None
 
 def obter_funcionario_por_email(email):
     """Obtém funcionário por email para login"""
-    conn = inicia_bd()
-    cursor = conn.cursor(dictionary=True)
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     try:
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM funcionarios WHERE email = %s", (email,))
         funcionario = cursor.fetchone()
-        return funcionario
-    finally:
+        cursor.close()
         conn.close()
+        return funcionario
+    
+    except Exception as e:
+        print(f"Erro ao obter funcionário por email: {e}")
+        if conn:
+            conn.close()
+        return None
 
 def verificar_senha(senha_digitada, senha_hash_banco):
     """Verifica se a senha digitada corresponde ao hash"""
@@ -53,7 +76,9 @@ def adicionar_funcionario(nome, email, senha, cargo):
     # Hash da senha
     senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
     
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -66,6 +91,7 @@ def adicionar_funcionario(nome, email, senha, cargo):
         conn.rollback()
         raise e
     finally:
+        cursor.close()
         conn.close()
 
 def atualizar_funcionario(id_funcionario, nome, email, cargo, senha=None):
@@ -74,7 +100,9 @@ def atualizar_funcionario(id_funcionario, nome, email, cargo, senha=None):
     if not nome or not email or not cargo:
         raise ValueError("Todos os campos são obrigatórios")
     
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         if senha:
@@ -96,11 +124,14 @@ def atualizar_funcionario(id_funcionario, nome, email, cargo, senha=None):
         conn.rollback()
         raise e
     finally:
+        cursor.close()
         conn.close()
 
 def excluir_funcionario(id_funcionario):
     """Exclui um funcionário"""
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         cursor.execute("DELETE FROM funcionarios WHERE id_funcionario = %s", (id_funcionario,))
@@ -109,15 +140,22 @@ def excluir_funcionario(id_funcionario):
         conn.rollback()
         raise e
     finally:
+        cursor.close()
         conn.close()
 
 def funcionario_tem_vendas(id_funcionario: int) -> bool:
     """Retorna True se o funcionário possui vendas vinculadas."""
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return False
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT COUNT(*) FROM vendas WHERE id_funcionario=%s", (id_funcionario,))
         total = cursor.fetchone()[0]
         return total > 0
+    except Exception as e:
+        print(f"Erro ao verificar vendas do funcionário: {e}")
+        return False
     finally:
+        cursor.close()
         conn.close()

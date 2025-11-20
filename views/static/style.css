@@ -22,6 +22,7 @@
     --danger-dark: #721c24;
     --warning-color: #f59e0b;
     --info-color: #6b7280;
+    --text-white: #FFFFFF;
     
     /* Cores Neutras */
     --bg-color: #F0F0F0;
@@ -214,24 +215,27 @@ input, select, textarea, button {
 }
 
 .alert-success {
-    background: linear-gradient(90deg, rgba(51, 204, 255, 0.15), rgba(168, 223, 255, 0.1));
-    color: var(--text-dark);
+    background: var(--success-color);
+    opacity: 0.8;
+    color: var(--text-white);
     border-left: 4px solid var(--success-color);
     border-radius: 8px;
     font-weight: 650;
 }
 
 .alert-error {
-    background: linear-gradient(90deg, rgba(220, 53, 69, 0.15), rgba(255, 200, 200, 0.1));
-    color: var(--text-dark);
+    background: var(--danger-color);
+    opacity: 0.8;
+    color: var(--text-white);
     border-left: 4px solid var(--danger-color);
     border-radius: 8px;
     font-weight: 650;
 }
 
 .alert-info {
-    background: linear-gradient(90deg, rgba(30, 144, 255, 0.15), rgba(168, 223, 255, 0.1));
-    color: var(--text-dark);
+    background: var(--info-color);
+    opacity: 0.8;
+    color: var(--text-white);
     border-left: 4px solid var(--info-color);
     border-radius: 8px;
     font-weight: 650;

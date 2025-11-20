@@ -1,9 +1,6 @@
 import bcrypt
 from config import Config
-from config import inicia_bd
 
-
-# FUNÇÃO CORRETA PARA PROFESSOR
 def listar_clientes():
     """Lista todos os clientes"""
     conn = Config.get_db_connection()
@@ -16,26 +13,32 @@ def listar_clientes():
         clientes = cursor.fetchall()
         cursor.close()
         conn.close()
-
         return clientes
+    
     except Exception as e:
-        print(f"Erro ao buscar clientes: {e}")
+        print(f"Erro ao listar clientes: {e}")
         if conn:
             conn.close()
         return []
-    
-        
 
 def obter_cliente(id_cliente):
     """Obtém um cliente específico por ID"""
-    conn = inicia_bd()
-    cursor = conn.cursor(dictionary=True)
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     try:
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM clientes WHERE id_cliente = %s", (id_cliente,))
         cliente = cursor.fetchone()
-        return cliente
-    finally:
+        cursor.close()
         conn.close()
+        return cliente
+    
+    except Exception as e:
+        print(f"Erro ao obter cliente: {e}")
+        if conn:
+            conn.close()
+        return None
 
 def adicionar_cliente(nome, cpf, telefone, email, endereco):
     """Adiciona um novo cliente"""
@@ -52,15 +55,19 @@ def adicionar_cliente(nome, cpf, telefone, email, endereco):
     if email and '@' not in email:
         raise ValueError("Email inválido")
     
-    conn = inicia_bd()
-    cursor = conn.cursor()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     try:
+        cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO clientes (nome, cpf, telefone, email, endereco)
             VALUES (%s, %s, %s, %s, %s)
         """, (nome, cpf, telefone, email, endereco))
-        conn.commit()
+        conn.commit() # Salva permanetentemente os clientes na nossa tabela.
+        cursor.close()
         return cursor.lastrowid
+    
     except Exception as e:
         conn.rollback()
         raise e
@@ -69,9 +76,11 @@ def adicionar_cliente(nome, cpf, telefone, email, endereco):
 
 def obter_cliente_por_email(email):
     """Obtém cliente por email para login"""
-    conn = inicia_bd()
-    cursor = conn.cursor(dictionary=True)
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     try:
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM clientes WHERE email = %s", (email,))
         return cursor.fetchone()
     finally:
@@ -95,7 +104,9 @@ def adicionar_cliente_com_senha(nome, cpf, telefone, email, endereco, senha, use
 
     senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
 
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         # Tenta inserir incluindo colunas opcionais (username, senha_hash)
@@ -106,10 +117,11 @@ def adicionar_cliente_com_senha(nome, cpf, telefone, email, endereco, senha, use
             """,
             (nome, cpf, telefone, email, endereco, senha_hash, username)
         )
+        cursor.close()
         conn.commit()
         return cursor.lastrowid
     except Exception as e:
-        conn.rollback()
+        conn.rollback() # Controle de mudanças durante a criação do cliente
         # Caso a tabela ainda não tenha as colunas, sinaliza claramente
         raise e
     finally:
@@ -125,7 +137,9 @@ def atualizar_perfil_cliente(id_cliente, username, nome, email, cpf, telefone, e
     if '@' not in email:
         raise ValueError("Email inválido")
 
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         cursor.execute(
@@ -136,6 +150,7 @@ def atualizar_perfil_cliente(id_cliente, username, nome, email, cpf, telefone, e
             """,
             (username, nome, email, cpf, telefone, endereco, id_cliente)
         )
+        cursor.close()
         conn.commit()
     except Exception as e:
         conn.rollback()
@@ -148,7 +163,9 @@ def atualizar_senha_cliente(id_cliente, nova_senha):
     if len(nova_senha) < 6:
         raise ValueError("A senha deve ter pelo menos 6 caracteres")
     senha_hash = bcrypt.hashpw(nova_senha.encode('utf-8'), bcrypt.gensalt())
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         cursor.execute("UPDATE clientes SET senha_hash=%s WHERE id_cliente=%s", (senha_hash, id_cliente))
@@ -157,6 +174,7 @@ def atualizar_senha_cliente(id_cliente, nova_senha):
         conn.rollback()
         raise e
     finally:
+        cursor.close()
         conn.close()
 
 def atualizar_cliente(id_cliente, nome, cpf, telefone, email, endereco):
@@ -164,7 +182,12 @@ def atualizar_cliente(id_cliente, nome, cpf, telefone, email, endereco):
     # Validação dos campos obrigatórios
     if not nome or not cpf:
         raise ValueError("Nome e CPF são obrigatórios")
-    
+    if not telefone:
+        raise ValueError("Telefone é obrigatório")
+    if not email:
+        raise ValueError("Email é obrigatório")
+    if not endereco:
+        raise ValueError("Endereço é obrigatório")      
     # Validação de CPF
     cpf_limpo = cpf.replace('.', '').replace('-', '')
     if len(cpf_limpo) != 11 or not cpf_limpo.isdigit():
@@ -174,7 +197,9 @@ def atualizar_cliente(id_cliente, nome, cpf, telefone, email, endereco):
     if email and '@' not in email:
         raise ValueError("Email inválido")
     
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -187,11 +212,14 @@ def atualizar_cliente(id_cliente, nome, cpf, telefone, email, endereco):
         conn.rollback()
         raise e
     finally:
+        cursor.close()
         conn.close()
 
 def excluir_cliente(id_cliente):
     """Exclui um cliente"""
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         cursor.execute("DELETE FROM clientes WHERE id_cliente=%s", (id_cliente,))
@@ -200,11 +228,14 @@ def excluir_cliente(id_cliente):
         conn.rollback()
         raise e
     finally:
+        cursor.close()
         conn.close()
 
 def cliente_ja_tem_vendas(id_cliente):
     """Verifica se cliente tem vendas associadas"""
-    conn = inicia_bd()
+    conn = Config.get_db_connection()
+    if not conn:
+        return None
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT COUNT(*) as total FROM vendas WHERE id_cliente=%s", (id_cliente,))
@@ -212,3 +243,4 @@ def cliente_ja_tem_vendas(id_cliente):
         return result[0] > 0
     finally:
         conn.close()
+        cursor.close()
