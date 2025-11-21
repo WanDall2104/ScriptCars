@@ -1,1 +1,0 @@
-gerar um arquivo unico para conectar ao bd? - colocar função em config.py
